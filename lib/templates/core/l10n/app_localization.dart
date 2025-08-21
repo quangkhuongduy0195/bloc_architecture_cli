@@ -1,8 +1,7 @@
 class l10nAppLocalizationGenerator {
   /// Generates the code for the [AppLocalizations] widget.
   static String gen() {
-    return '''import 'package:flutter/material.dart';
-
+    return '''
 library app_localization;
 
 import 'dart:developer' as developer;

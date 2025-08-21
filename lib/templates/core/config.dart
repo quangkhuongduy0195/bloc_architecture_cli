@@ -10,7 +10,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../di/injection.dart';
-import 'app_localization/app_localization_app.dart';
+import 'l10n/app_localization_app.dart';
 import 'common/base/app_bloc_observer.dart';
 import 'common/base/mixin/persisted_mixin.dart';
 import 'config.dart';
@@ -24,11 +24,11 @@ export 'package:flutter_hooks/flutter_hooks.dart';
 export 'package:flutter_screenutil/flutter_screenutil.dart';
 export 'package:velocity_x/velocity_x.dart' hide VxThemeExtension;
 
-export '../core/app_localization/public_ext.dart';
+export '../core/l10n/public_ext.dart';
 export '../core/collections/collections.dart';
 export '../core/collections/locale_keys.g.dart';
 export '../core/extensions/extensions.dart';
-export '../core/utilities/logger.dart';
+export '../core/utils/logger.dart';
 export '../widgets/common/title_widget.dart';
 
 part 'styles/dimensions.dart';

@@ -2,7 +2,7 @@ class AppBlocObserverGenerator {
   static String gen() {
     return '''import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../utilities/logger.dart';
+import '../../utils/logger.dart';
 
 class AppBlocObserver extends BlocObserver {
   @override

@@ -4,7 +4,7 @@ class AppUserCubitGenerator {
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../features/auth/domain/entities/user.dart';
+import '../../../features/auth/data/models/user_model.dart';
 
 part 'app_user_state.dart';
 

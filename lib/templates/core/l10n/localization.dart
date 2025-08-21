@@ -6,7 +6,7 @@ class l10nLocalizationGenerator {
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-import '../utilities/logger.dart';
+import '../utils/logger.dart';
 import 'plural_rules.dart';
 import 'translations.dart';
 

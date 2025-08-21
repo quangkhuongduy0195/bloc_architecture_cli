@@ -7,7 +7,7 @@ export './language_codes.dart';
   }
 
   static String genFake() {
-    return '''import '../../features/auth/domain/entities/user.dart';
+    return '''import '../../features/auth/data/models/user_model.dart';
 
 abstract class Fake {
   static const User user = User(

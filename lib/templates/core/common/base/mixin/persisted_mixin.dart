@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../config.dart';
-import '../../../utilities/preferences.dart';
+import '../../../utils/preferences.dart';
 
 mixin PersistedStateMixin<T> {
   // cache key for this state

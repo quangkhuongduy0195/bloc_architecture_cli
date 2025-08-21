@@ -6,8 +6,8 @@ import 'package:injectable/injectable.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 import '../core/network/api_client.dart';
-import '../features/auth/services/auth_service.dart';
-import '../features/users/domain/services/user_service.dart';
+import '../features/auth/domain/services/auth_service.dart';
+import '../features/user/domain/services/user_service.dart';
 import 'injection.config.dart';
 
 final getIt = GetIt.instance;
@@ -34,6 +34,7 @@ abstract class AppModule {
   @lazySingleton
   InternetConnection get internetConnection => InternetConnection();
 }
+
 ''';
   }
 }

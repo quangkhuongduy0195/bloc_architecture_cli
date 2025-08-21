@@ -1,39 +1,92 @@
 class ProjectTemplates {
   static String generatePubspec(String projectName) {
     return '''name: $projectName
-description: A new Flutter project with clean architecture.
-publish_to: 'none'
+description: "A new Flutter project."
+
+publish_to: "none"
+
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: ^3.5.4
+  flutter: 3.24.4
 
 dependencies:
   flutter:
     sdk: flutter
-  
-  # State Management
-  flutter_bloc: ^8.1.3
-  get_it: ^7.6.4
-  
-  # Network
-  dio: ^5.3.2
-  
-  # Local Storage
-  shared_preferences: ^2.2.2
-  
-  # Utils
-  equatable: ^2.0.5
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  dio: ^5.7.0
+  freezed: ^3.1.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.3
+  google_fonts: ^6.2.1
+  skeletonizer: ^2.1.0+1
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+  shared_preferences: ^2.3.2
+  auto_route: ^10.1.2
+  device_info_plus: ^11.5.0
+  visibility_detector: ^0.4.0+2
+  flutter_screenutil: ^5.9.3
+  intl: any
+  auto_size_text: ^3.0.0
+  velocity_x: ^4.2.1
+  provider: ^6.1.2
+  collection: ^1.18.0
+  synchronized: ^3.1.0+1
+  flutter_secure_storage: ^9.2.2
+  flutter_hooks: ^0.21.3+1
+  uuid: ^4.5.1
+  flutter_svg: ^2.0.10+1
+  logger: ^2.4.0
+  pretty_dio_logger: ^1.4.0
+  get_it: ^8.0.1
+  retrofit: ^4.4.0
+  cached_network_image: ^3.4.1
+  internet_connection_checker_plus: ^2.5.2
   dartz: ^0.10.1
+  injectable: ^2.5.1
+  path: ^1.9.1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.13
+  json_serializable: ^6.8.0
+  auto_route_generator: ^10.1.0
+  retrofit_generator: ">=8.0.0 <10.0.0"
+  flutter_gen_runner: ^5.8.0
+  injectable_generator: ^2.7.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/translations/
+    - assets/navigator/
+
+flutter_gen:
+  output: lib/core/collections
+  assets:
+    outputs:
+      class_name: Assets
+      style: camel-case
+  integrations:
+    flutter_svg: true
+  fonts:
+    outputs:
+      class_name: MyFontFamily
+    enabled: true
+  exclude: null
 ''';
   }
 
@@ -131,7 +184,7 @@ class LoadingScreen extends StatelessWidget {
   }
 
   static String generateMain() {
-    return '''import 'core/app_localization/app_localization_app.dart';
+    return '''import 'core/l10n/app_localization_app.dart';
 import 'core/common/app_user/app_user_cubit.dart';
 import 'core/common/common/common_bloc.dart';
 import 'core/config.dart';
@@ -164,7 +217,8 @@ void main() async {
       ),
     );
   });
-}''';
+}
+''';
   }
 
   static String generateCoreBarrel() {
