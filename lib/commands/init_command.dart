@@ -6,7 +6,7 @@ import '../generators/project_generator.dart';
 class InitCommand {
   Future<void> execute(ArgResults results) async {
     final projectName = results.rest.isNotEmpty ? results.rest.first : null;
-    
+
     if (projectName == null) {
       print('Please provide a project name: flutter_gen init <project_name>');
       return;
@@ -14,12 +14,12 @@ class InitCommand {
 
     final currentDir = Directory.current.path;
     final projectPath = path.join(currentDir, projectName);
-    
+
     print('Creating Flutter project with clean architecture...');
     print('Project path: $projectPath');
-    
+
     await ProjectGenerator().generate(projectPath, projectName);
-    
+
     print('✓ Project created successfully!');
     print('');
     print('Next steps:');
