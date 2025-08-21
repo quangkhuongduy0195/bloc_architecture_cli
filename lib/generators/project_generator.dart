@@ -122,7 +122,7 @@ class ProjectGenerator {
 
     await _removeTestFiles(projectPath);
 
-    await _runFlutterPubGetSync(projectPath, projectName);
+    await _runFlutterPubAddsSync(projectPath, projectName);
 
     await _runOtherCommandsSync(projectPath, projectName);
   }
@@ -260,24 +260,106 @@ class ProjectGenerator {
     }
   }
 
-  Future<void> _runFlutterPubGetSync(
+  Future<void> _runFlutterPubAddsSync(
       String projectPath, String projectName) async {
-    // try {
-    //   print('Running flutter pub get...');
-    //   final result = Process.runSync(
-    //     'flutter',
-    //     ['pub', 'get'],
-    //     workingDirectory: projectPath,
-    //   );
+    try {
+      print('Running flutter pub get...');
+      final result = Process.runSync(
+        'flutter',
+        ['pub', 'get'],
+        workingDirectory: projectPath,
+      );
 
-    //   if (result.exitCode == 0) {
-    //     print('✅ flutter pub get completed');
-    //   } else {
-    //     print('❌ flutter pub get failed: ${result.stderr}');
-    //   }
-    // } catch (e) {
-    //   print('Error: $e');
-    // }
+      if (result.exitCode == 0) {
+        print('✅ flutter pub get completed');
+      } else {
+        print('❌ flutter pub get failed: ${result.stderr}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    return;
+    final packages = [
+      'cupertino_icons',
+      'dio',
+      'json_annotation',
+      'flutter_bloc',
+      'equatable',
+      'google_fonts',
+      'skeletonizer',
+      'hive_flutter',
+      'hive',
+      'shared_preferences',
+      'auto_route',
+      'device_info_plus',
+      'visibility_detector',
+      'flutter_screenutil',
+      'intl',
+      'auto_size_text',
+      'velocity_x',
+      'provider',
+      'collection',
+      'synchronized',
+      'flutter_secure_storage',
+      'flutter_hooks',
+      'uuid',
+      'flutter_svg',
+      'logger',
+      'pretty_dio_logger',
+      'get_it',
+      'retrofit',
+      'cached_network_image',
+      'internet_connection_checker_plus',
+      'dartz',
+      'injectable',
+      'path_provider',
+    ];
+    final packages_dev = [
+      'flutter_lints',
+      'build_runner',
+      'json_serializable',
+      'auto_route_generator',
+      'retrofit_generator',
+      'flutter_gen_runner',
+      'injectable_generator',
+    ];
+
+    try {
+      print('Running flutter pub add packages...');
+      final result = Process.runSync(
+        'flutter',
+        ['pub', 'add', ...packages],
+        workingDirectory: projectPath,
+      );
+
+      if (result.exitCode == 0) {
+        print('✅ flutter pub add packages completed');
+      } else {
+        print('❌ flutter pub add packages failed: ${result.stderr}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    try {
+      for (var pk in packages_dev) {
+        print('Running flutter pub add -dev $pk...');
+        final result = Process.runSync(
+          'flutter',
+          ['pub', 'add', 'dev', pk],
+          workingDirectory: projectPath,
+        );
+
+        if (result.exitCode == 0) {
+          print('✅ flutter pub add -dev $pk completed');
+        } else {
+          print('❌ flutter pub add -dev $pk failed: ${result.stderr}');
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future<void> _generateMainFiles(

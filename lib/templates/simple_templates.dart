@@ -19,8 +19,6 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   dio: ^5.7.0
-  freezed: ^3.1.0
-  freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   flutter_bloc: ^9.1.1
   equatable: ^2.0.3
@@ -40,7 +38,7 @@ dependencies:
   collection: ^1.18.0
   synchronized: ^3.1.0+1
   flutter_secure_storage: ^9.2.2
-  flutter_hooks: ^0.21.3+1
+  flutter_hooks: ^0.21.2
   uuid: ^4.5.1
   flutter_svg: ^2.0.10+1
   logger: ^2.4.0
