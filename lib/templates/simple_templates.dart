@@ -51,7 +51,6 @@ dependencies:
   internet_connection_checker_plus: ^2.5.2
   dartz: ^0.10.1
   injectable: ^2.5.1
-  path: ^1.9.1
   path_provider: ^2.1.5
 
 dev_dependencies:
