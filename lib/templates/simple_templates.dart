@@ -39,12 +39,10 @@ flutter:
 
   static String generateRoot() {
     return '''import 'package:flutter/services.dart';
-
 import '../core/common/common/common_bloc.dart';
 import '../core/config.dart';
 import '../core/routes/app_routes.dart';
-import '../core/services/injection_container.dart';
-import '../core/services/lifecycle_app.dart';
+import '../di/injection.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/indicators/loading_indicator.dart';
 
@@ -57,7 +55,7 @@ class RootApp extends HookWidget {
       () {
         getIt<CommonBloc>().add(const CommonInitial());
         getIt<AuthBloc>().add(const AuthIsUserLoggedIn());
-        lifecycleApp();
+        // lifecycleApp();
 
         /// set the system ui mode to edge to edge
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -129,52 +127,44 @@ class LoadingScreen extends StatelessWidget {
       ),
     );
   }
-}
-    ''';
+}''';
   }
 
   static String generateMain() {
-    return '''import 'package:flutter/material.dart';
-import 'core/core.dart';
+    return '''import 'core/app_localization/app_localization_app.dart';
+import 'core/common/app_user/app_user_cubit.dart';
+import 'core/common/common/common_bloc.dart';
+import 'core/config.dart';
+import 'di/injection.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'root/root.dart';
 
+/// The entry point of the application.
+///
+/// Initializes the application and runs the `RootApp` widget.
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Clean Architecture',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomeScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Clean Architecture'),
-      ),
-      body: const Center(
-        child: Text('Welcome to Flutter Clean Architecture!'),
+  Configs.init(() {
+    runApp(
+      ScreenUtilInit(
+        designSize: Configs.designSize,
+        minTextAdapt: Configs.minTextAdapter,
+        splitScreenMode: Configs.splitScreenMode,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => getIt<CommonBloc>()),
+            BlocProvider(create: (_) => getIt<AuthBloc>()),
+            BlocProvider(create: (_) => getIt<AppUserCubit>()),
+          ],
+          child: AppLocalizations(
+            path: 'assets/translations',
+            supportedLocales: LanguageLocals.supportedLocales,
+            child: const RootApp(),
+          ),
+        ),
       ),
     );
-  }
-}
-''';
+  });
+}''';
   }
 
   static String generateCoreBarrel() {
