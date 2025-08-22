@@ -1,73 +1,73 @@
 class FeatureTemplates {
-  static String generateEntity(String className) {
-    return '''import 'package:equatable/equatable.dart';
+  static String generateEntity(String className, String fileName) {
+    return '''import 'dart:async';
+
+import 'package:equatable/equatable.dart';
+
+import '../../data/models/${fileName}_model.dart';
 
 class ${className}Entity extends Equatable {
-  final int id;
-  final String name;
-  final DateTime createdAt;
 
-  const ${className}Entity({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-  });
+  const ${className}Entity({this.id, this.name, this.createdAt});
+  final int? id;
+  final String? name;
+  final DateTime? createdAt;
 
   @override
-  List<Object> get props => [id, name, createdAt];
+  List<Object?> get props => [id, name, createdAt];
+
+  FutureOr<${className}Model> toModel() {
+    return ${className}Model(id: id, name: name, createdAt: createdAt);
+  }
 }
+
 ''';
   }
 
-  static String generateRepository(String className) {
-    return '''import 'package:dartz/dartz.dart';
-import '../../../core/error/failures.dart';
-import '../entities/${className.toLowerCase()}_entity.dart';
+  static String generateRepository(String className, String fileName) {
+    return '''import 'dart:async';
+
+import 'package:dartz/dartz.dart';
+
+import '../../../../core/errors/exception.dart';
+import '../../data/models/${fileName}_model.dart';
 
 abstract class ${className}Repository {
-  Future<Either<Failure, List<${className}Entity>>> get${className}s();
-  Future<Either<Failure, ${className}Entity>> get${className}(int id);
-  Future<Either<Failure, ${className}Entity>> create${className}(${className}Entity entity);
-  Future<Either<Failure, ${className}Entity>> update${className}(${className}Entity entity);
-  Future<Either<Failure, void>> delete${className}(int id);
+  const ${className}Repository();
+  Future<Either<AppException, ${className}Model>> get${className}();
 }
+
 ''';
   }
 
   static String generateUseCase(String className, String fileName) {
-    return '''import 'package:dartz/dartz.dart';
-import '../../../core/error/failures.dart';
-import '../../../core/usecases/usecase.dart';
-import '../entities/${fileName}_entity.dart';
+    return '''import 'dart:async';
+
+import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/errors/exception.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../../data/models/${fileName}_model.dart';
 import '../repositories/${fileName}_repository.dart';
 
-class Get${className} implements UseCase<${className}Entity, Get${className}Params> {
+@Injectable()
+class Get${className}
+    implements UsecaseWithoutFuture<Either<AppException, ${className}Model>> {
+  Get${className}(this.repository);
   final ${className}Repository repository;
 
-  Get${className}(this.repository);
-
   @override
-  Future<Either<Failure, ${className}Entity>> call(Get${className}Params params) async {
-    return await repository.get${className}(params.id);
+  Future<Either<AppException, ${className}Model>> call() {
+    return repository.get${className}();
   }
 }
 
 class Get${className}Params {
-  final int id;
-
   Get${className}Params({required this.id});
+  final int id;
 }
 
-class Get${className}s implements UseCase<List<${className}Entity>, NoParams> {
-  final ${className}Repository repository;
-
-  Get${className}s(this.repository);
-
-  @override
-  Future<Either<Failure, List<${className}Entity>>> call(NoParams params) async {
-    return await repository.get${className}s();
-  }
-}
 ''';
   }
 
@@ -79,16 +79,16 @@ part '${fileName}_model.g.dart';
 
 @JsonSerializable()
 class ${className}Model extends ${className}Entity {
-  const ${className}Model({
-    required super.id,
-    required super.name,
-    required super.createdAt,
-  });
-
   factory ${className}Model.fromJson(Map<String, dynamic> json) =>
       _\$${className}ModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _\$${className}ModelToJson(this);
+      
+  factory ${className}Model.createFromEntity(${className}Entity entity) {
+    return ${className}Model(
+      id: entity.id,
+      name: entity.name,
+      createdAt: entity.createdAt,
+    );
+  }
 
   factory ${className}Model.fromEntity(${className}Entity entity) {
     return ${className}Model(
@@ -97,6 +97,14 @@ class ${className}Model extends ${className}Entity {
       createdAt: entity.createdAt,
     );
   }
+
+  const ${className}Model({
+    super.id,
+    super.name,
+    super.createdAt,
+  });
+
+  Map<String, dynamic> toJson() => _\$${className}ModelToJson(this);
 
   ${className}Entity toEntity() {
     return ${className}Entity(
@@ -110,343 +118,203 @@ class ${className}Model extends ${className}Entity {
   }
 
   static String generateRemoteDataSource(String className, String fileName) {
-    return '''import '../../../core/network/api_client.dart';
+    return '''import 'dart:async';
+import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/common/base/mixin/api_error_handler_mixin.dart';
+import '../../../../core/errors/exception.dart';
+
+import '../../domain/services/${fileName}_service.dart';
 import '../models/${fileName}_model.dart';
 
-abstract class ${className}RemoteDataSource {
-  Future<List<${className}Model>> get${className}s();
-  Future<${className}Model> get${className}(int id);
-  Future<${className}Model> create${className}(${className}Model model);
-  Future<${className}Model> update${className}(${className}Model model);
-  Future<void> delete${className}(int id);
-}
+@Injectable()
+class ${className}RemoteDataSource with ApiHandlerMixin {
+  ${className}RemoteDataSource(this.service);
+  final ${className}Service service;
 
-class ${className}RemoteDataSourceImpl implements ${className}RemoteDataSource {
-  final ApiClient apiClient;
-
-  ${className}RemoteDataSourceImpl({required this.apiClient});
-
-  @override
-  Future<List<${className}Model>> get${className}s() async {
+  Future<Either<AppException, ${className}Model>> get${className}() async {
     try {
-      final response = await apiClient.getData(); // Replace with actual endpoint
-      return (response['data'] as List)
-          .map((json) => ${className}Model.fromJson(json))
-          .toList();
+      final response = await service.get${className}();
+      return Right(response);
     } catch (e) {
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<${className}Model> get${className}(int id) async {
-    try {
-      final response = await apiClient.getData(); // Replace with actual endpoint
-      return ${className}Model.fromJson(response);
-    } catch (e) {
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<${className}Model> create${className}(${className}Model model) async {
-    try {
-      final response = await apiClient.getData(); // Replace with actual endpoint
-      return ${className}Model.fromJson(response);
-    } catch (e) {
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<${className}Model> update${className}(${className}Model model) async {
-    try {
-      final response = await apiClient.getData(); // Replace with actual endpoint
-      return ${className}Model.fromJson(response);
-    } catch (e) {
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<void> delete${className}(int id) async {
-    try {
-      await apiClient.getData(); // Replace with actual endpoint
-    } catch (e) {
-      throw ServerException();
+      return Left(ServerException());
     }
   }
 }
+
 ''';
   }
 
   static String generateLocalDataSource(String className, String fileName) {
-    return '''import 'dart:convert';
-import '../../../core/storage/local_storage.dart';
-import '../../../core/error/exceptions.dart';
+    return '''import 'dart:async';
+import 'package:injectable/injectable.dart';
+import '../../../../core/common/base/mixin/persisted_mixin.dart';
 import '../models/${fileName}_model.dart';
 
-abstract class ${className}LocalDataSource {
-  Future<List<${className}Model>> getCached${className}s();
-  Future<${className}Model> getCached${className}(int id);
-  Future<void> cache${className}s(List<${className}Model> models);
-  Future<void> cache${className}(${className}Model model);
-  Future<void> remove${className}(int id);
-  Future<void> clearCache();
-}
-
-class ${className}LocalDataSourceImpl implements ${className}LocalDataSource {
-  final LocalStorage localStorage;
-  static const String _cachedKey = 'cached_${fileName}s';
-
-  ${className}LocalDataSourceImpl({required this.localStorage});
+@Injectable()
+class ${className}LocalDataSource with PersistedStateMixin<${className}Model> {
+  const ${className}LocalDataSource();
 
   @override
-  Future<List<${className}Model>> getCached${className}s() async {
-    try {
-      final jsonString = await localStorage.getString(_cachedKey);
-      if (jsonString != null) {
-        final List<dynamic> jsonList = json.decode(jsonString);
-        return jsonList.map((json) => ${className}Model.fromJson(json)).toList();
-      }
-      throw CacheException();
-    } catch (e) {
-      throw CacheException();
-    }
-  }
+  String get cacheKey => 'cached_${fileName}s';
+
+  Future<${className}Model?> getCache() => load();
 
   @override
-  Future<${className}Model> getCached${className}(int id) async {
-    try {
-      final models = await getCached${className}s();
-      return models.firstWhere((model) => model.id == id);
-    } catch (e) {
-      throw CacheException();
-    }
-  }
-
-  @override
-  Future<void> cache${className}s(List<${className}Model> models) async {
-    try {
-      final jsonString = json.encode(models.map((model) => model.toJson()).toList());
-      await localStorage.setString(_cachedKey, jsonString);
-    } catch (e) {
-      throw CacheException();
-    }
-  }
-
-  @override
-  Future<void> cache${className}(${className}Model model) async {
-    try {
-      final models = await getCached${className}s();
-      final index = models.indexWhere((m) => m.id == model.id);
-      if (index != -1) {
-        models[index] = model;
-      } else {
-        models.add(model);
-      }
-      await cache${className}s(models);
-    } catch (e) {
-      // If no cached data exists, create new cache
-      await cache${className}s([model]);
-    }
-  }
-
-  @override
-  Future<void> remove${className}(int id) async {
-    try {
-      final models = await getCached${className}s();
-      models.removeWhere((model) => model.id == id);
-      await cache${className}s(models);
-    } catch (e) {
-      throw CacheException();
-    }
-  }
-
-  @override
-  Future<void> clearCache() async {
-    try {
-      await localStorage.remove(_cachedKey);
-    } catch (e) {
-      throw CacheException();
-    }
+  FutureOr<${className}Model> fromJson(Map<String, dynamic> json) {
+    return ${className}Model.fromJson(json);
   }
 }
+
+
 ''';
   }
 
   static String generateRepositoryImpl(String className, String fileName) {
     return '''import 'package:dartz/dartz.dart';
-import '../../../core/error/failures.dart';
-import '../../../core/error/exceptions.dart';
-import '../../../core/network/network_info.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/errors/exception.dart';
+import '../../../../core/network/connection_checker.dart';
 import '../../domain/entities/${fileName}_entity.dart';
 import '../../domain/repositories/${fileName}_repository.dart';
-import '../datasources/${fileName}_remote_datasource.dart';
 import '../datasources/${fileName}_local_datasource.dart';
-import '../models/${fileName}_model.dart';
+import '../datasources/${fileName}_remote_datasource.dart';
 
 class ${className}RepositoryImpl implements ${className}Repository {
+  ${className}RepositoryImpl(
+    this.remoteDataSource,
+    this.localDataSource,
+    this.connectionChecker,
+  );
   final ${className}RemoteDataSource remoteDataSource;
   final ${className}LocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
-
-  ${className}RepositoryImpl({
-    required this.remoteDataSource,
-    required this.localDataSource,
-    required this.networkInfo,
-  });
+  final ConnectionChecker connectionChecker;
 
   @override
-  Future<Either<Failure, List<${className}Entity>>> get${className}s() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final remoteData = await remoteDataSource.get${className}s();
-        await localDataSource.cache${className}s(remoteData);
-        return Right(remoteData.map((model) => model.toEntity()).toList());
-      } on ServerException {
-        return Left(ServerFailure());
-      }
+  Future<Either<AppException, ${className}Entity>> get${className}() async {
+    if (await connectionChecker.isConnected) {
+      final remoteResult = await remoteDataSource.get${className}();
+      return remoteResult.fold((exception) => Left(exception), (
+        ${className}Model,
+      ) async {
+        return Right(${className}Model.toEntity());
+      });
     } else {
-      try {
-        final localData = await localDataSource.getCached${className}s();
-        return Right(localData.map((model) => model.toEntity()).toList());
-      } on CacheException {
-        return Left(CacheFailure());
-      }
-    }
-  }
-
-  @override
-  Future<Either<Failure, ${className}Entity>> get${className}(int id) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final remoteData = await remoteDataSource.get${className}(id);
-        await localDataSource.cache${className}(remoteData);
-        return Right(remoteData.toEntity());
-      } on ServerException {
-        return Left(ServerFailure());
-      }
-    } else {
-      try {
-        final localData = await localDataSource.getCached${className}(id);
-        return Right(localData.toEntity());
-      } on CacheException {
-        return Left(CacheFailure());
-      }
-    }
-  }
-
-  @override
-  Future<Either<Failure, ${className}Entity>> create${className}(${className}Entity entity) async {
-    try {
-      final model = ${className}Model.fromEntity(entity);
-      final createdData = await remoteDataSource.create${className}(model);
-      await localDataSource.cache${className}(createdData);
-      return Right(createdData.toEntity());
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, ${className}Entity>> update${className}(${className}Entity entity) async {
-    try {
-      final model = ${className}Model.fromEntity(entity);
-      final updatedData = await remoteDataSource.update${className}(model);
-      await localDataSource.cache${className}(updatedData);
-      return Right(updatedData.toEntity());
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> delete${className}(int id) async {
-    try {
-      await remoteDataSource.delete${className}(id);
-      await localDataSource.remove${className}(id);
-      return const Right(null);
-    } on ServerException {
-      return Left(ServerFailure());
+      return Left(NetworkException());
     }
   }
 }
+
 ''';
   }
 
-  static String generateController(String className, String fileName) {
-    return '''import 'package:flutter_bloc/flutter_bloc.dart';
+  static String generateBloc(String className, String fileName) {
+    return '''import 'package:flutter/physics.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../core/usecases/usecase.dart';
+import 'package:injectable/injectable.dart';
+import '../../../../core/common/base/base_bloc.dart';
+import '../../../../core/common/base/base_event.dart';
+import '../../../../core/common/base/base_state.dart';
 import '../../domain/entities/${fileName}_entity.dart';
 import '../../domain/usecases/get_${fileName}.dart';
 
 part '${fileName}_state.dart';
+part '${fileName}_event.dart';
 
-class ${className}Cubit extends Cubit<${className}State> {
-  final Get${className}s get${className}s;
-  final Get${className} get${className};
+@LazySingleton()
+class ${className}Bloc extends BaseBloc<${className}Event, ${className}State> {
+  ${className}Bloc({required Get${className} get${className}})
+    : _get${className} = get${className},
+      super(${className}Initial()) {
+    on<${className}Requested>((event, emit) => _on${className}Requested(event, emit));
+  }
 
-  ${className}Cubit({
-    required this.get${className}s,
-    required this.get${className},
-  }) : super(${className}Initial());
+  final Get${className} _get${className};
 
-  Future<void> load${className}s() async {
-    emit(${className}Loading());
-    
-    final result = await get${className}s(NoParams());
-    
+  Future<void> _on${className}Requested(
+    ${className}Requested event,
+    Emitter<${className}State> emit,
+  ) async {
+    startLoading();
+    final result = await _get${className}.call();
+    stopLoading();
     result.fold(
-      (failure) => emit(${className}Error(_mapFailureToMessage(failure))),
-      (data) => emit(${className}Loaded(data)),
+      (failure) => emit(${className}Failure(failure.message)),
+      (signUpEntity) => emit(${className}Success(signUpEntity)),
     );
   }
+}
 
-  Future<void> load${className}(int id) async {
-    emit(${className}Loading());
-    
-    final result = await get${className}(Get${className}Params(id: id));
-    
-    result.fold(
-      (failure) => emit(${className}Error(_mapFailureToMessage(failure))),
-      (data) => emit(${className}DetailLoaded(data)),
-    );
+''';
   }
 
-  String _mapFailureToMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ServerFailure:
-        return 'Server Failure';
-      case CacheFailure:
-        return 'Cache Failure';
-      case NetworkFailure:
-        return 'Network Failure';
-      default:
-        return 'Unexpected Error';
-    }
+  static String generateState(String className, String fileName) {
+    return '''part of '${fileName}_bloc.dart';
+
+sealed class ${className}State extends BaseState {
+  const ${className}State();
+}
+
+class ${className}Initial extends ${className}State {
+  const ${className}Initial();
+}
+
+class ${className}Success extends ${className}State {
+  const ${className}Success(this.${fileName}Entity);
+  final ${className}Entity ${fileName}Entity;
+}
+
+class ${className}Failure extends ${className}State {
+  const ${className}Failure(this.message);
+  final String message;
+}
+
+''';
   }
+
+  static String generateEvent(String className, String fileName) {
+    return '''part of '${fileName}_bloc.dart';
+
+sealed class ${className}Event extends BaseEvent {
+  const ${className}Event();
+}
+
+class ${className}Requested extends ${className}Event {
+  const ${className}Requested();
+
+  @override
+  List<Object> get props => [];
 }
 ''';
   }
 
   static String generateScreen(String className, String fileName) {
-    return '''import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../controllers/${fileName}_controller.dart';
+    return '''import '../../../../core/config.dart';
+import '../../../../di/injection.dart';
+import '../bloc/${fileName}_bloc.dart';
 
-class ${className}Screen extends StatelessWidget {
+@RoutePage(name: '${className}Route')
+class ${className}Screen extends StatefulHookWidget {
   const ${className}Screen({super.key});
 
   @override
+  State<StatefulWidget> createState() => _${className}ScreenState();
+}
+
+class _${className}ScreenState extends State<${className}Screen> {
+  final bloc = getIt<${className}Bloc>();
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ${className}Cubit(
-        get${className}s: getIt(),
-        get${className}: getIt(),
-      )..load${className}s(),
-      child: const ${className}View(),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign Up')),
+      body: BlocProvider<${className}Bloc>(
+        create: (context) => bloc,
+        child: const ${className}View(),
+      ),
     );
   }
 }
@@ -457,117 +325,36 @@ class ${className}View extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('${className}s'),
-      ),
-      body: BlocBuilder<${className}Cubit, ${className}State>(
+      appBar: AppBar(title: const Text('${className}s')),
+      body: BlocBuilder<${className}Bloc, ${className}State>(
         builder: (context, state) {
-          if (state is ${className}Loading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is ${className}Loaded) {
-            return ListView.builder(
-              itemCount: state.data.length,
-              itemBuilder: (context, index) {
-                final item = state.data[index];
-                return ListTile(
-                  title: Text(item.name),
-                  subtitle: Text('ID: \${item.id}'),
-                  onTap: () {
-                    context.read<${className}Cubit>().load${className}(item.id);
-                  },
-                );
-              },
-            );
-          } else if (state is ${className}DetailLoaded) {
-            final item = state.data;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text('ID: \${item.id}'),
-                  const SizedBox(height: 8),
-                  Text('Created: \${item.createdAt}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<${className}Cubit>().load${className}s();
-                    },
-                    child: const Text('Back to List'),
-                  ),
-                ],
-              ),
-            );
-          } else if (state is ${className}Error) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.message),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<${className}Cubit>().load${className}s();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
           return const Center(child: Text('Welcome to ${className} Feature'));
         },
       ),
     );
   }
 }
+
 ''';
   }
 
   static String generateWidget(String className, String fileName) {
-    return '''import 'package:flutter/material.dart';
-
-class ${className}Widget extends StatelessWidget {
-  final String title;
-  final VoidCallback? onTap;
-
-  const ${className}Widget({
-    super.key,
-    required this.title,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'This is a ${className} widget',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return '';
   }
+
+  static String generateService(String className, String fileName) {
+    return '''import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart';
+import '../../data/models/${fileName}_model.dart';
+
+part '${fileName}_service.g.dart';
+
+@RestApi()
+abstract class ${className}Service {
+  factory ${className}Service(Dio dio, {String? baseUrl}) = _${className}Service;
+
+  @GET('/api/${fileName}')
+  Future<${className}Model> get${className}();
 }
 ''';
   }
