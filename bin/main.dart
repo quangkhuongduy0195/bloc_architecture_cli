@@ -3,7 +3,6 @@ import 'package:args/args.dart';
 import '../lib/commands/generate_command.dart';
 import '../lib/commands/init_command.dart';
 import '../lib/commands/feature_command.dart';
-import '../lib/commands/locale_command.dart';
 
 void main(List<String> arguments) async {
   print('╔═════════════════════════════════════════════════════════════╗');
@@ -99,9 +98,6 @@ void main(List<String> arguments) async {
       case 'feature':
         await FeatureCommand().execute(command);
         break;
-      case 'locale':
-        await LocaleCommand().execute(command);
-        break;
       default:
         print('Unknown command: ${command.name}');
         _showHelp(parser);
@@ -121,7 +117,6 @@ void _showHelp(ArgParser parser) {
   print('  init      Initialize a new Flutter project with clean architecture');
   print('  generate  Generate specific components (model, repository, etc.)');
   print('  feature   Create a new feature module');
-  print('  locale    Generate locale keys from translation files');
   print('');
   print('generate available options:');
   print('Usage: hybrid generate <type> <name> [feature_name]');
@@ -136,12 +131,10 @@ void _showHelp(ArgParser parser) {
   print('  widget        Generate a widget');
   print('  service       Generate a service');
   print('');
-  print('locale available options:');
-  print('Usage: hybrid locale <options>');
-  print('  --source-dir   Specify the source directory');
-  print('  --source-file  Specify the source file');
-  print('  --output-dir   Specify the output directory');
-  print('  --output-file  Specify the output file');
+  print('feature available options:');
+  print('Usage: hybrid feature <options>');
+  print('  --name        Specify the feature name');
+  print('  --description Specify the feature description');
   print('  --format      Specify the format (json or keys)');
   print('  --skip-unnecessary-keys  Skip unnecessary keys of nested objects');
   print('');

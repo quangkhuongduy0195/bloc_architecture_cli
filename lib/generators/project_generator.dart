@@ -3,7 +3,6 @@ import 'package:args/args.dart';
 import 'package:hybrid_cli/templates/l10n/en.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
-import '../commands/locale_command.dart';
 import '../templates/l10n/ja.dart';
 import '../templates/l10n/vi.dart';
 import '../templates/templates.dart';
@@ -129,43 +128,8 @@ class ProjectGenerator {
         print(
             '❌ flutter pub run build_runner build -d failed: ${result.stderr}');
       }
-
-      // Generate locale keys
-      print('🔄 Generating locale keys...');
-      await _generateLocaleKeys(projectPath);
     } catch (e) {
       print('Error: $e');
-    }
-  }
-
-  Future<void> _generateLocaleKeys(String projectPath) async {
-    try {
-      // Create a mock ArgResults for LocaleCommand
-      final localeParser = ArgParser();
-      localeParser.addOption('source-dir', defaultsTo: 'lib/l10n');
-      localeParser.addOption('source-file');
-      localeParser.addOption('output-dir', defaultsTo: 'lib/core/collections');
-      localeParser.addOption('output-file', defaultsTo: 'locale_keys.g.dart');
-      localeParser.addOption('format', defaultsTo: 'keys');
-      localeParser.addFlag('skip-unnecessary-keys', defaultsTo: false);
-
-      // Parse with default values
-      final mockArgs = localeParser.parse([]);
-
-      // Change to project directory temporarily
-      final originalDir = Directory.current;
-      Directory.current = Directory(projectPath);
-
-      try {
-        final localeCommand = LocaleCommand();
-        await localeCommand.execute(mockArgs);
-        print('✅ Locale keys generated successfully');
-      } finally {
-        // Restore original directory
-        Directory.current = originalDir;
-      }
-    } catch (e) {
-      print('⚠️  Error generating locale keys: $e');
     }
   }
 
@@ -215,7 +179,6 @@ class ProjectGenerator {
         'assets/images/',
         'assets/icons/',
         'assets/navigator/',
-        'lib/l10n'
       ];
       pubspecMap['flutter'] = flutter;
 
