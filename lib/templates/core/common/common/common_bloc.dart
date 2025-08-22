@@ -20,6 +20,7 @@ class CommonBloc extends BaseBloc<CommonEvent, CommonState> {
     on<LoadingVisibility>(_onLoadingVisibility);
     on<AppLifecycleEvent>(_onAppLifecycle);
     on<ThemeModeChanged>(_onThemeModeChanged);
+    on<ChangeLanguage>(_onChangeLanguage);
   }
 
   Future<void> _onInitial(
@@ -38,6 +39,15 @@ class CommonBloc extends BaseBloc<CommonEvent, CommonState> {
         emit(state.copyWith(themeMode: ThemeMode.system));
         break;
     }
+  }
+
+  Future<void> _onChangeLanguage(
+    ChangeLanguage event,
+    Emitter<CommonState> emit,
+  ) async {
+    // await PersistedStateMixin.write(
+    //     'ff_language', event.newLocale.languageCode);
+    emit(state.copyWith(locale: event.newLocale));
   }
 
   Future<void> _onThemeModeChanged(

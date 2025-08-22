@@ -1,8 +1,6 @@
 class ChartPageGenerator {
   static String gen() {
-    return '''import 'package:flutter/material.dart';
-
-import '../../core/config.dart';
+    return '''import '../../core/config.dart';
 
 @RoutePage(name: 'ChartRoute')
 class ChartScreen extends StatelessWidget {
@@ -11,10 +9,11 @@ class ChartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(context.tr(LocaleKeys.navigatorChart)),
+      child: Text(context.l10n.navigatorChart),
     );
   }
 }
+
 ''';
   }
 }

@@ -1,98 +1,12 @@
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:hybrid_cli/templates/core/common/app_user/app_user_cubit.dart';
-import 'package:hybrid_cli/templates/core/l10n/translations.dart';
-import 'package:hybrid_cli/templates/features/auth/domain/repositories/authentication_repository.dart';
-import 'package:hybrid_cli/templates/features/dashboard/calendar_page.dart';
+import 'package:hybrid_cli/templates/l10n/en.dart';
 import 'package:path/path.dart' as path;
+import 'package:yaml/yaml.dart';
 import '../commands/locale_command.dart';
-import '../templates/core/collections/collections.dart';
-import '../templates/core/collections/language_codes.dart';
-import '../templates/core/common/app_user/app_user_state.dart';
-import '../templates/core/common/base/app_bloc_observer.dart';
-import '../templates/core/common/base/base_bloc.dart';
-import '../templates/core/common/base/base_event.dart';
-import '../templates/core/common/base/base_state.dart';
-import '../templates/core/common/base/mixin/api_error_handler_mixin.dart';
-import '../templates/core/common/base/mixin/log_mixin.dart';
-import '../templates/core/common/base/mixin/persisted_mixin.dart';
-import '../templates/core/common/common/common_bloc.dart';
-import '../templates/core/common/common/common_event.dart';
-import '../templates/core/common/common/common_state.dart';
-import '../templates/core/config.dart';
-import '../templates/core/errors/exception.dart';
-import '../templates/core/extensions/constants.dart';
-import '../templates/core/extensions/context_extension.dart';
-import '../templates/core/extensions/extensions.dart';
-import '../templates/core/extensions/keys_ext.dart';
-import '../templates/core/extensions/map.dart';
-import '../templates/core/extensions/string_ext.dart';
-import '../templates/core/l10n/app_localization.dart';
-import '../templates/core/l10n/app_localization_app.dart';
-import '../templates/core/l10n/asset_loader.dart';
-import '../templates/core/l10n/exceptions.dart';
-import '../templates/core/l10n/localization.dart';
-import '../templates/core/l10n/plural_rules.dart';
-import '../templates/core/l10n/public.dart';
-import '../templates/core/l10n/public_ext.dart';
-import '../templates/core/l10n/utils.dart';
-import '../templates/core/network/api_client.dart';
-import '../templates/core/network/connection_checker.dart';
-import '../templates/core/network/network_info.dart';
-import '../templates/core/routes/app_routes.dart';
-import '../templates/core/styles/dimensions.dart';
-import '../templates/core/styles/theme.dart';
-import '../templates/core/usecase/usecase.dart';
-import '../templates/core/utils/logger.dart';
-import '../templates/core/utils/preferences.dart';
-import '../templates/di/injection.dart';
-import '../templates/features/auth/data/datasource/auth_local_data_source.dart';
-import '../templates/features/auth/data/datasource/auth_remote_data_source.dart';
-import '../templates/features/auth/data/models/user_model.dart';
-import '../templates/features/auth/data/repositories/authentication_repository_impl.dart';
-import '../templates/features/auth/domain/entities/user_entity.dart';
-import '../templates/features/auth/domain/usecases/auth_check.dart';
-import '../templates/features/auth/domain/usecases/auth_login.dart';
-import '../templates/features/auth/domain/usecases/auth_logout.dart';
-import '../templates/features/auth/domain/usecases/auth_sign_up.dart';
-import '../templates/features/auth/presentation/bloc/auth_bloc.dart';
-import '../templates/features/auth/presentation/bloc/auth_event.dart';
-import '../templates/features/auth/presentation/bloc/auth_state.dart';
-import '../templates/features/auth/presentation/pages/login_page.dart';
-import '../templates/features/auth/domain/services/auth_service.dart';
-import '../templates/features/dashboard/chart_page.dart';
-import '../templates/features/dashboard/dashboard_page.dart';
-import '../templates/features/dashboard/home_page.dart';
-import '../templates/features/dashboard/setting_page.dart';
-import '../templates/features/dashboard/time_page.dart';
-import '../templates/features/users/data/datasource/user_remote_data_source.dart';
-import '../templates/features/users/data/repositories/user_repository_impl.dart';
-import '../templates/features/users/domain/repositories/user_repository.dart';
-import '../templates/features/users/domain/services/user_service.dart';
-import '../templates/features/users/domain/usecases/get_users.dart';
-import '../templates/features/users/presentation/bloc/user_bloc.dart';
-import '../templates/features/users/presentation/bloc/user_event.dart';
-import '../templates/features/users/presentation/bloc/user_state.dart';
-import '../templates/features/users/presentation/pages/user_list.dart';
-import '../templates/simple_templates.dart';
-import '../templates/widgets/button_custom.dart';
-import '../templates/widgets/cache_image.dart';
-import '../templates/widgets/common/base_loading_indicator.dart';
-import '../templates/widgets/common/base_page_state.dart';
-import '../templates/widgets/common/title_widget.dart';
-import '../templates/widgets/dialogs.dart';
-import '../templates/widgets/fetch_more_indicator.dart';
-import '../templates/widgets/indicators/loading.dart';
-import '../templates/widgets/indicators/loading_indicator.dart';
-import '../templates/widgets/indicators/loading_manager.dart';
-import '../templates/widgets/language.dart';
-import '../templates/widgets/refresh_widget.dart';
-import '../templates/widgets/setting_ui.dart';
-import '../templates/widgets/shader_mask.dart';
-import '../templates/widgets/size_box.dart';
-import '../templates/widgets/text_field_custom.dart';
-import '../templates/widgets/theme_model.dart';
-import '../templates/widgets/user_info_list_title.dart';
+import '../templates/l10n/ja.dart';
+import '../templates/l10n/vi.dart';
+import '../templates/templates.dart';
 
 class ProjectGenerator {
   Future<void> generate(String projectPath, String projectName) async {
@@ -100,7 +14,15 @@ class ProjectGenerator {
     final projectDir = Directory(projectPath);
     await projectDir.create(recursive: true);
 
-    _runFlutterCreateProjectSync(projectPath, projectName);
+    await _runFlutterCreateProjectSync(projectPath, projectName);
+
+    await updatePubspecYaml(projectPath);
+
+    await _createBuildYaml(projectPath);
+
+    await _createL10nYaml(projectPath);
+
+    await _createAnalyticsYaml(projectPath);
 
     // Create lib directory structure
     await _createDirectoryStructure(projectPath);
@@ -155,6 +77,8 @@ class ProjectGenerator {
       'lib/features',
       'lib/gen',
       'lib/l10n',
+      'lib/l10n',
+      'lib/l10n/arb',
       'lib/widgets',
       'lib/widgets/common',
       'lib/widgets/indicators',
@@ -260,29 +184,121 @@ class ProjectGenerator {
     }
   }
 
+  Future<void> updatePubspecYaml(String projectPath) async {
+    try {
+      // Đọc file pubspec.yaml hiện tại
+      final file = File(path.join(projectPath, 'pubspec.yaml'));
+      final yamlString = await file.readAsString();
+
+      // Parse YAML thành Map
+      final yamlDoc = loadYaml(yamlString);
+      final pubspecMap = Map<String, dynamic>.from(yamlDoc);
+
+      // Thêm yaml dependency
+      if (pubspecMap['dependencies'] == null) {
+        pubspecMap['dependencies'] = <String, dynamic>{};
+      }
+
+      final dependencies =
+          Map<String, dynamic>.from(pubspecMap['dependencies']);
+      pubspecMap['dependencies'] = dependencies;
+
+      // Cập nhật flutter section
+      if (pubspecMap['flutter'] == null) {
+        pubspecMap['flutter'] = <String, dynamic>{};
+      }
+
+      final flutter = Map<String, dynamic>.from(pubspecMap['flutter']);
+      flutter['generate'] = true;
+      flutter['uses-material-design'] = true;
+      flutter['assets'] = [
+        'assets/images/',
+        'assets/icons/',
+        'assets/navigator/',
+        'lib/l10n'
+      ];
+      pubspecMap['flutter'] = flutter;
+
+      // Tạo nội dung YAML mới (đơn giản)
+      final newYamlContent = _buildYamlContent(pubspecMap);
+
+      // Ghi lại file
+      await file.writeAsString(newYamlContent);
+
+      print('Updated pubspec.yaml successfully!');
+    } catch (e) {
+      print('Error updating pubspec.yaml: $e');
+    }
+  }
+
+  String _buildYamlContent(Map<String, dynamic> data) {
+    final buffer = StringBuffer();
+
+    // Basic info
+    buffer.writeln('name: ${data['name']}');
+    buffer.writeln('description: "${data['description']}"');
+    buffer.writeln('publish_to: \'${data['publish_to']}\'');
+    buffer.writeln();
+
+    buffer.writeln('version: ${data['version']}');
+    buffer.writeln();
+
+    // Environment
+    buffer.writeln('environment:');
+    final env = data['environment'] as Map;
+    env.forEach((key, value) {
+      buffer.writeln('  $key: $value');
+    });
+    buffer.writeln();
+
+    // Dependencies
+    buffer.writeln('dependencies:');
+    final deps = data['dependencies'] as Map;
+    deps.forEach((key, value) {
+      if (value is Map && value.containsKey('sdk')) {
+        buffer.writeln('  $key:');
+        buffer.writeln('    sdk: ${value['sdk']}');
+      } else {
+        buffer.writeln('  $key: $value');
+      }
+    });
+    buffer.writeln();
+
+    // Dev dependencies
+    buffer.writeln('dev_dependencies:');
+    final devDeps = data['dev_dependencies'] as Map;
+    devDeps.forEach((key, value) {
+      if (value is Map && value.containsKey('sdk')) {
+        buffer.writeln('  $key:');
+        buffer.writeln('    sdk: ${value['sdk']}');
+      } else {
+        buffer.writeln('  $key: $value');
+      }
+    });
+    buffer.writeln();
+
+    // Flutter section
+    buffer.writeln('flutter:');
+    final flutter = data['flutter'] as Map;
+    flutter.forEach((key, value) {
+      if (key == 'assets' && value is List) {
+        buffer.writeln('  $key:');
+        for (final asset in value) {
+          buffer.writeln('    - $asset');
+        }
+      } else {
+        buffer.writeln('  $key: $value');
+      }
+    });
+
+    return buffer.toString();
+  }
+
   Future<void> _runFlutterPubAddsSync(
       String projectPath, String projectName) async {
-    try {
-      print('Running flutter pub get...');
-      final result = Process.runSync(
-        'flutter',
-        ['pub', 'get'],
-        workingDirectory: projectPath,
-      );
-
-      if (result.exitCode == 0) {
-        print('✅ flutter pub get completed');
-      } else {
-        print('❌ flutter pub get failed: ${result.stderr}');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-
-    return;
     final packages = [
-      'cupertino_icons',
       'dio',
+      'json_serializable',
       'json_annotation',
       'flutter_bloc',
       'equatable',
@@ -301,7 +317,6 @@ class ProjectGenerator {
       'provider',
       'collection',
       'synchronized',
-      'flutter_secure_storage',
       'flutter_hooks',
       'uuid',
       'flutter_svg',
@@ -316,14 +331,67 @@ class ProjectGenerator {
       'path_provider',
     ];
     final packages_dev = [
-      'flutter_lints',
       'build_runner',
-      'json_serializable',
       'auto_route_generator',
       'retrofit_generator',
       'flutter_gen_runner',
       'injectable_generator',
     ];
+    try {
+      print('Running flutter pub add flutter_localizations --sdk=flutter...');
+      final result = Process.runSync(
+        'flutter',
+        ['pub', 'add', 'flutter_localizations', '--sdk=flutter'],
+        workingDirectory: projectPath,
+      );
+      if (result.exitCode == 0) {
+        print('✅ flutter pub add flutter_localizations --sdk=flutter');
+      } else {
+        print(
+            '❌ flutter pub add flutter_localizations --sdk=flutter failed: ${result.stderr}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    // 'flutter_secure_storage',
+    try {
+      print('Running flutter pub add flutter_secure_storage...');
+      final result = Process.runSync(
+        'flutter',
+        [
+          'pub',
+          'add',
+          'flutter_secure_storage',
+        ],
+        workingDirectory: projectPath,
+      );
+
+      if (result.exitCode == 0) {
+        print('✅ flutter pub add flutter_secure_storage completed');
+      } else {
+        print(
+            '❌ flutter pub add flutter_secure_storage failed: ${result.stderr}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    try {
+      print('Running flutter pub add dev...');
+      final result = Process.runSync(
+        'flutter',
+        ['pub', 'add', '--dev', ...packages_dev],
+        workingDirectory: projectPath,
+      );
+
+      if (result.exitCode == 0) {
+        print('✅ flutter pub add dev completed');
+      } else {
+        print('❌ flutter pub add dev failed: ${result.stderr}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
 
     try {
       print('Running flutter pub add packages...');
@@ -341,33 +409,14 @@ class ProjectGenerator {
     } catch (e) {
       print('Error: $e');
     }
-
-    try {
-      for (var pk in packages_dev) {
-        print('Running flutter pub add -dev $pk...');
-        final result = Process.runSync(
-          'flutter',
-          ['pub', 'add', 'dev', pk],
-          workingDirectory: projectPath,
-        );
-
-        if (result.exitCode == 0) {
-          print('✅ flutter pub add -dev $pk completed');
-        } else {
-          print('❌ flutter pub add -dev $pk failed: ${result.stderr}');
-        }
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
   }
 
   Future<void> _generateMainFiles(
       String projectPath, String projectName) async {
     // Generate pubspec.yaml
-    final pubspecContent = ProjectTemplates.generatePubspec(projectName);
-    await File(path.join(projectPath, 'pubspec.yaml'))
-        .writeAsString(pubspecContent);
+    // final pubspecContent = ProjectTemplates.generatePubspec(projectName);
+    // await File(path.join(projectPath, 'pubspec.yaml'))
+    //     .writeAsString(pubspecContent);
 
     // Generate main.dart
     final mainContent = ProjectTemplates.generateMain();
@@ -399,11 +448,6 @@ class ProjectGenerator {
     await File(
             path.join(projectPath, 'lib', 'core', 'collections', 'fake.dart'))
         .writeAsString(CollectionsGenerator.genFake());
-
-    // Generate language codes file
-    await File(path.join(
-            projectPath, 'lib', 'core', 'collections', 'language_codes.dart'))
-        .writeAsString(LanguageCodesGenerator.gen());
 
     // Generate Common
     await File(path.join(
@@ -605,106 +649,6 @@ class ProjectGenerator {
       'string_ext.dart',
     )).writeAsString(
       StringExtGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'app_localization_app.dart',
-    )).writeAsString(
-      l10nAppLocalizationAppGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'app_localization.dart',
-    )).writeAsString(
-      l10nAppLocalizationGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'asset_loader.dart',
-    )).writeAsString(
-      l10nAssetLoaderGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'exceptions.dart',
-    )).writeAsString(
-      l10nExceptionsGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'localization.dart',
-    )).writeAsString(
-      l10nLocalizationGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'plural_rules.dart',
-    )).writeAsString(
-      l10nPluralRulesGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'public_ext.dart',
-    )).writeAsString(
-      l10nPublicExtensionsGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'public.dart',
-    )).writeAsString(
-      l10nPublicGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'translations.dart',
-    )).writeAsString(
-      l10nTranslationsGenerator.gen(),
-    );
-
-    await File(path.join(
-      projectPath,
-      'lib',
-      'core',
-      'l10n',
-      'utils.dart',
-    )).writeAsString(
-      l10nUtilsGenerator.gen(),
     );
 
     await File(path.join(
@@ -1108,29 +1052,136 @@ class ProjectGenerator {
   }
 
   Future<void> _copyl10nFiles(String projectPath) async {
-    final l10nDir = Directory(path.join(projectPath, 'lib', 'l10n'));
+    final l10nDir = Directory(path.join(projectPath, 'lib', 'l10n', 'arb'));
     if (!await l10nDir.exists()) {
       await l10nDir.create(recursive: true);
     }
 
-    // Get the package root directory by finding the current script's location
-    final script = Platform.script;
-    final packageRoot = script.scheme == 'file'
-        ? Directory(path.dirname(path.dirname(script.toFilePath())))
-        : Directory.current;
+    await File(path.join(projectPath, 'lib', 'l10n', 'arb', 'intl_en.arb'))
+        .writeAsString(EnGenerator.gen());
 
-    final exampleL10nDir =
-        Directory(path.join(packageRoot.path, 'lib', 'templates', 'l10n'));
+    await File(path.join(projectPath, 'lib', 'l10n', 'arb', 'intl_ja.arb'))
+        .writeAsString(JaGenerator.gen());
 
-    final sampleL10nExist = await exampleL10nDir.exists();
+    await File(path.join(projectPath, 'lib', 'l10n', 'arb', 'intl_vi.arb'))
+        .writeAsString(ViGenerator.gen());
+  }
 
-    if (sampleL10nExist) {
-      final files = exampleL10nDir.listSync().whereType<File>();
-      for (final file in files) {
-        final destFile =
-            File(path.join(l10nDir.path, path.basename(file.path)));
-        await file.copy(destFile.path);
-      }
+  Future<void> _createBuildYaml(String projectPath) async {
+    final buildYaml = File(path.join(projectPath, 'build.yaml'));
+    if (!await buildYaml.exists()) {
+      await buildYaml.create(recursive: true);
     }
+
+    await buildYaml.writeAsString('''
+targets:
+  \$default:
+    sources:
+      exclude:
+        - bin/*.dart
+    builders:
+      json_serializable:
+        options:
+          include_if_null: false
+          explicit_to_json: true
+          generic_argument_factories: false
+          # field_rename: snake
+      flutter_gen_runner:
+        options:
+          output: lib/gen
+          assets:
+            outputs:
+              class_name: Assets
+              style: camel-case
+          integrations:
+            flutter_svg: true
+          fonts:
+            outputs:
+              class_name: MyFontFamily
+            enabled: true
+          exclude: null
+
+    ''');
+  }
+
+  Future<void> _createL10nYaml(String projectPath) async {
+    final l10nYaml = File(path.join(projectPath, 'l10n.yaml'));
+    if (!await l10nYaml.exists()) {
+      await l10nYaml.create(recursive: true);
+    }
+
+    await l10nYaml.writeAsString('''
+arb-dir: lib/l10n/arb
+template-arb-file: intl_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/gen/l10n
+nullable-getter: true
+preferred-supported-locales: ["en","ja", "vi"]
+use-deferred-loading: false
+synthetic-package: false
+    ''');
+  }
+
+  Future<void> _createAnalyticsYaml(String projectPath) async {
+    final analyticsYaml = File(path.join(projectPath, 'analysis_options.yaml'));
+    if (!await analyticsYaml.exists()) {
+      await analyticsYaml.create(recursive: true);
+    }
+
+    await analyticsYaml.writeAsString('''
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**.freezed.dart"
+    - "**.g.dart"
+    - "**.mocks.dart"
+    - "**/core/localization/generated/**"
+  errors:
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    avoid_print: true
+    prefer_single_quotes: true
+    avoid_function_literals_in_foreach_calls: false
+    avoid_annotating_with_dynamic: true
+    always_declare_return_types: true
+    unnecessary_new: true
+    avoid_empty_else: true
+    directives_ordering: true
+    avoid_unused_constructor_parameters: true
+    prefer_relative_imports: true
+    curly_braces_in_flow_control_structures: false
+    constant_identifier_names: false
+    empty_catches: false
+    depend_on_referenced_packages: false
+    use_key_in_widget_constructors: false
+    require_trailing_commas: true
+    unnecessary_await_in_return: true
+    unnecessary_brace_in_string_interps: true
+    unnecessary_const: true
+    unnecessary_constructor_name: true
+    unnecessary_getters_setters: true
+    unnecessary_lambdas: false
+    unnecessary_late: true
+    unnecessary_null_aware_assignments: true
+    unnecessary_null_checks: true
+    unnecessary_null_in_if_null_operators: true
+    unnecessary_nullable_for_final_variable_declarations: true
+    unnecessary_overrides: true
+    unnecessary_parenthesis: true
+    unnecessary_raw_strings: false
+    unnecessary_statements: true
+    unnecessary_string_escapes: true
+    unnecessary_string_interpolations: true
+    unnecessary_this: true
+    unnecessary_to_list_in_spreads: true
+    no_duplicate_case_values: true
+    sort_constructors_first: true
+    no_leading_underscores_for_local_identifiers: true
+    avoid_void_async: true
+    ''');
   }
 }

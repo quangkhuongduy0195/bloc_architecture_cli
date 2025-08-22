@@ -23,6 +23,15 @@ class AppLifecycleEvent extends CommonEvent {
 class ThemeModeChanged extends CommonEvent {
   const ThemeModeChanged();
 }
+
+class ChangeLanguage extends CommonEvent {
+  const ChangeLanguage(this.newLocale);
+  final Locale newLocale;
+
+  @override
+  List<Object> get props => [newLocale];
+}
+
 ''';
   }
 }

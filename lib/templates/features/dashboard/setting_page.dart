@@ -1,8 +1,6 @@
 class SettingPageGenerator {
   static String gen() {
-    return '''import 'package:auto_route/auto_route.dart';
-
-import '../../core/common/app_user/app_user_cubit.dart';
+    return '''import '../../core/common/app_user/app_user_cubit.dart';
 import '../../core/config.dart';
 import '../../widgets/language.dart';
 import '../../widgets/setting_ui.dart';
@@ -16,7 +14,7 @@ class SettingScreen extends StatelessWidget {
     final user = context.select((AppUserCubit bloc) => bloc.state.user);
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr(LocaleKeys.settingsTitle)),
+        title: Text(context.l10n.settingsTitle),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -25,12 +23,12 @@ class SettingScreen extends StatelessWidget {
             const UserInfoListTitle(),
             HeightBox(20.h),
             SettingsSection(
-              title: context.tr(LocaleKeys.settingsInformationPersonal),
+              title: context.l10n.settingsInformationPersonal,
               children: [
                 SettingsTile(
                   leading: Assets.iconsCalendar.svg(),
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsBirthday),
+                    context.l10n.settingsBirthday,
                     fontWeight: FontWeight.w500,
                   ),
                   trailing: TextApp(
@@ -41,7 +39,7 @@ class SettingScreen extends StatelessWidget {
                 SettingsTile(
                   leading: Assets.iconsMailBlue.svg(),
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsEmail),
+                    context.l10n.settingsEmail,
                     fontWeight: FontWeight.w500,
                   ),
                   trailing: TextApp(
@@ -52,7 +50,7 @@ class SettingScreen extends StatelessWidget {
                 SettingsTile(
                   leading: Assets.iconsPhone.svg(),
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsPhone),
+                    context.l10n.settingsPhone,
                     fontWeight: FontWeight.w500,
                   ),
                   trailing: TextApp(
@@ -64,14 +62,14 @@ class SettingScreen extends StatelessWidget {
             ),
             HeightBox(20.h),
             SettingsSection(
-              title: context.tr(LocaleKeys.settingsGeneralInformation),
+              title: context.l10n.settingsGeneralInformation,
               children: [
                 SettingsTile.switchTile(
                   initialValue: false,
                   needToShowDivider: true,
                   activeSwitchColor: Colors.blue,
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsBiometricAuthentication),
+                    context.l10n.settingsBiometricAuthentication,
                     fontWeight: FontWeight.w500,
                   ),
                   leading: Assets.iconsBio.svg(),
@@ -81,15 +79,11 @@ class SettingScreen extends StatelessWidget {
                   leading: Assets.iconsMessage.svg(),
                   needToShowDivider: true,
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsLanguage),
+                    context.l10n.settingsLanguage,
                     fontWeight: FontWeight.w500,
                   ),
                   trailing: TextApp(
-                    context.tr(
-                      LanguageLocals.getDisplayLanguage(
-                        context.locale.languageCode,
-                      ).name,
-                    ),
+                    context.locale.countryCode ?? context.locale.languageCode,
                     color: greyText,
                   ),
                   onPressed: () {
@@ -100,7 +94,7 @@ class SettingScreen extends StatelessWidget {
                   leading: Assets.iconsShield.svg(),
                   needToShowDivider: true,
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsChangePassword),
+                    context.l10n.settingsChangePassword,
                     fontWeight: FontWeight.w500,
                   ),
                   onPressed: () {},
@@ -108,7 +102,7 @@ class SettingScreen extends StatelessWidget {
                 SettingsTile.navigation(
                   leading: Assets.iconsLogout.svg(),
                   title: TextApp(
-                    context.tr(LocaleKeys.settingsLogout),
+                    context.l10n.settingsLogout,
                     fontWeight: FontWeight.w500,
                     color: error,
                   ),
@@ -124,6 +118,7 @@ class SettingScreen extends StatelessWidget {
     );
   }
 }
+
 ''';
   }
 }

@@ -1,8 +1,7 @@
 class WidgetLanguagePickerGenerator {
   static String gen() {
-    return '''
-
-import '../../../core/config.dart';
+    return '''import '../../../core/config.dart';
+import '../gen/l10n/app_localizations.dart';
 import 'button_custom.dart';
 
 class LanguagePicker extends HookWidget {
@@ -24,22 +23,20 @@ class LanguagePicker extends HookWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(context.tr(LocaleKeys.languageScreenTitle)),
+        title: Text(context.l10n.languageScreenTitle),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: context.supportedLocales.length,
+                itemCount: AppLocalizations.supportedLocales.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final language = context.supportedLocales.elementAt(index);
-                  final isoCodeName = LanguageLocals.getDisplayLanguage(
-                    language.languageCode,
-                  );
+                  final language =
+                      AppLocalizations.supportedLocales.elementAt(index);
                   return ListTile(
                     title: Text(
-                      context.tr(isoCodeName.name),
+                      language.languageCode.toUpperCase(),
                       style: context.bodyLarge,
                     ),
                     trailing: language == defaultLanguage.value
@@ -58,11 +55,10 @@ class LanguagePicker extends HookWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               child: GradientButton(
-                text: context.tr(LocaleKeys.languageScreenButton),
+                text: context.l10n.languageScreenButton,
                 height: 44.h,
                 onPressed: () {
-                  final locale = defaultLanguage.value;
-                  context.setLocale(locale);
+                  context.setLocale(defaultLanguage.value);
 
                   Navigator.of(context).pop();
                 },
@@ -74,6 +70,7 @@ class LanguagePicker extends HookWidget {
     );
   }
 }
+
 ''';
   }
 }

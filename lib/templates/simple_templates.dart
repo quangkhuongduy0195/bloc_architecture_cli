@@ -94,6 +94,7 @@ import '../core/config.dart';
 import '../core/routes/app_routes.dart';
 import '../di/injection.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../gen/l10n/app_localizations.dart';
 import '../widgets/indicators/loading_indicator.dart';
 
 class RootApp extends HookWidget {
@@ -116,18 +117,17 @@ class RootApp extends HookWidget {
       },
       [],
     );
-    return BlocSelector<CommonBloc, CommonState, ThemeMode>(
-      selector: (state) => state.themeMode,
-      builder: (context, themeMode) {
+    return BlocBuilder<CommonBloc, CommonState>(
+      builder: (context, state) {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             systemNavigationBarColor: Colors.transparent,
-            statusBarIconBrightness: themeMode == ThemeMode.system
+            statusBarIconBrightness: state.themeMode == ThemeMode.system
                 ? MediaQuery.platformBrightnessOf(context) == Brightness.dark
                     ? Brightness.light
                     : Brightness.dark
-                : themeMode == ThemeMode.dark
+                : state.themeMode == ThemeMode.dark
                     ? Brightness.light
                     : Brightness.dark,
           ),
@@ -135,12 +135,12 @@ class RootApp extends HookWidget {
             key: globalKey,
             debugShowCheckedModeBanner: false,
             showPerformanceOverlay: false,
-            themeMode: themeMode,
+            themeMode: state.themeMode,
             theme: lightTheme(context),
             darkTheme: darkTheme(context),
-            locale: context.locale,
-            supportedLocales: context.supportedLocales,
-            localizationsDelegates: context.localizationDelegates,
+            locale: state.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             routerConfig: appRouter.config(
               navigatorObservers: () => [MyObserver()],
             ),
@@ -177,12 +177,12 @@ class LoadingScreen extends StatelessWidget {
       ),
     );
   }
-}''';
+}
+''';
   }
 
   static String generateMain() {
-    return '''import 'core/l10n/app_localization_app.dart';
-import 'core/common/app_user/app_user_cubit.dart';
+    return '''import 'core/common/app_user/app_user_cubit.dart';
 import 'core/common/common/common_bloc.dart';
 import 'core/config.dart';
 import 'di/injection.dart';
@@ -205,16 +205,13 @@ void main() async {
             BlocProvider(create: (_) => getIt<AuthBloc>()),
             BlocProvider(create: (_) => getIt<AppUserCubit>()),
           ],
-          child: AppLocalizations(
-            path: 'assets/translations',
-            supportedLocales: LanguageLocals.supportedLocales,
-            child: const RootApp(),
-          ),
+          child: const RootApp(),
         ),
       ),
     );
   });
 }
+
 ''';
   }
 

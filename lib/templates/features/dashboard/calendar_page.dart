@@ -1,8 +1,6 @@
 class CalendarPageGenerator {
   static String gen() {
-    return '''import 'package:flutter/material.dart';
-
-import '../../core/config.dart';
+    return '''import '../../core/config.dart';
 
 @RoutePage(name: 'CalendarRoute')
 class CalendarScreen extends StatelessWidget {
@@ -11,7 +9,7 @@ class CalendarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(context.tr(LocaleKeys.navigatorCalendar)),
+      child: Text(context.l10n.navigatorCalendar),
     );
   }
 }

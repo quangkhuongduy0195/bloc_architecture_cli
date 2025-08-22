@@ -1,7 +1,6 @@
 class UserListGenerator {
   static String gen() {
-    return '''
-import 'dart:async';
+    return '''import 'dart:async';
 
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -140,6 +139,7 @@ class UserWidget extends StatelessWidget {
     );
   }
 }
+
 ''';
   }
 }

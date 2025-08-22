@@ -1,8 +1,7 @@
 class CollectionsGenerator {
   static String gen() {
-    return '''export './assets.gen.dart';
+    return '''export '../../gen/assets.gen.dart';
 export './fake.dart';
-export './language_codes.dart';
 ''';
   }
 

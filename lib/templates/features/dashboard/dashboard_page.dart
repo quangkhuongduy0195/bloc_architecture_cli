@@ -1,8 +1,6 @@
 class DashboardPageGenerator {
   static String gen() {
-    return '''import 'package:auto_route/auto_route.dart';
-
-import 'package:flutter_svg/svg.dart';
+    return '''import 'package:flutter_svg/svg.dart';
 
 import '../../core/config.dart';
 import '../../core/routes/app_routes.gr.dart';
@@ -26,23 +24,23 @@ class DashboardScreen extends HookWidget {
   Widget build(BuildContext context) {
     final bottoms = [
       BottomBar(
-        title: LocaleKeys.navigatorHome,
+        title: context.l10n.navigatorHome,
         icon: Assets.navigatorHome.path,
       ),
       BottomBar(
-        title: LocaleKeys.navigatorCalendar,
+        title: context.l10n.navigatorCalendar,
         icon: Assets.navigatorCalendar.path,
       ),
       BottomBar(
-        title: LocaleKeys.navigatorChart,
+        title: context.l10n.navigatorChart,
         icon: Assets.navigatorChart.path,
       ),
       BottomBar(
-        title: LocaleKeys.navigatorTime,
+        title: context.l10n.navigatorTime,
         icon: Assets.navigatorTime.path,
       ),
       BottomBar(
-        title: LocaleKeys.navigatorSettings,
+        title: context.l10n.navigatorSettings,
         icon: Assets.navigatorSettings.path,
       ),
     ];
@@ -65,14 +63,13 @@ class DashboardScreen extends HookWidget {
               selectedFontSize: 12,
               selectedItemColor: context.colorScheme.primary,
               items: bottoms.asMap().entries.map((e) {
-                final index = e.key;
                 final bottom = e.value;
                 return BottomNavigationBarItem(
                   icon: ShaderMaskWidget(
                     colors: [primary, primaryVariant],
                     child: SvgPicture.asset(bottom.icon),
                   ),
-                  label: context.tr(bottom.title),
+                  label: e.value.title,
                 );
               }).toList(),
               onTap: tabsRouter.setActiveIndex,
@@ -84,6 +81,7 @@ class DashboardScreen extends HookWidget {
     );
   }
 }
+
 ''';
   }
 }

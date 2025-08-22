@@ -108,14 +108,14 @@ class _LoginScreenState extends State<LoginPage> {
 
                     /// Display the login title.
                     TextApp.bold(
-                      context.tr(LocaleKeys.loginTitle),
+                      context.l10n.loginTitle,
                       type: TextType.xxlg,
                     ),
                     HeightBox(8.h),
 
                     /// Display the login description.
                     TextApp(
-                      context.tr(LocaleKeys.loginDescription),
+                      context.l10n.loginDescription,
                       textAlign: TextAlign.center,
                     ),
                     HeightBox(20.h),
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginPage> {
                     /// Display the username text field.
                     TextFieldCustom(
                       controller: username,
-                      hintText: context.tr(LocaleKeys.loginUsername),
+                      hintText: context.l10n.loginUsername,
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Assets.iconsMail.svg(),
                     ),
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginPage> {
                       builder: (context, state) {
                         return TextFieldCustom(
                           controller: password,
-                          hintText: context.tr(LocaleKeys.loginPassword),
+                          hintText: context.l10n.loginPassword,
                           obscureText: true,
                           prefixIcon: Assets.iconsLock.svg(),
                           errorText: state,
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginPage> {
 
                     /// Display the login button.
                     GradientButton(
-                      text: context.tr(LocaleKeys.loginButton),
+                      text: context.l10n.loginButton,
                       onPressed: checkFieldsEmpty.value
                           ? null
                           : () {
@@ -177,6 +177,7 @@ class _LoginScreenState extends State<LoginPage> {
     );
   }
 }
+
 ''';
   }
 }

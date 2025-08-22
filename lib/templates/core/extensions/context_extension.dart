@@ -1,6 +1,10 @@
 class ContextExtensionGenerator {
   static String gen() {
-    return '''import '../config.dart';
+    return '''import 'package:get_it/get_it.dart';
+
+import '../../gen/l10n/app_localizations.dart';
+import '../common/common/common_bloc.dart';
+import '../config.dart';
 
 extension ContextExt on BuildContext {
   ///[AppColors] instance from the closest [Theme] ancestor
@@ -59,7 +63,17 @@ extension ContextExt on BuildContext {
         ),
       );
   }
+
+  Locale get locale => Localizations.localeOf(this);
+
+  AppLocalizations get l10n => AppLocalizations.of(this)!;
+
+  Future<void> setLocale(Locale locale) async {
+    await AppLocalizations.delegate.load(locale);
+    GetIt.I<CommonBloc>().add(ChangeLanguage(locale));
+  }
 }
+
 
 ''';
   }

@@ -1,8 +1,6 @@
 class HomePageGenerator {
   static String gen() {
-    return '''import 'package:flutter/material.dart';
-
-import '../../core/config.dart';
+    return '''import '../../core/config.dart';
 import '../../widgets/theme_model.dart';
 import '../user/presentation/pages/user_list.dart';
 
@@ -19,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr(LocaleKeys.navigatorHome)),
+        title: Text(context.l10n.navigatorHome),
         actions: const [
           ThemeModeToggle(),
         ],
