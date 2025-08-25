@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:args/args.dart';
 import 'package:hybrid_cli/templates/l10n/en.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
