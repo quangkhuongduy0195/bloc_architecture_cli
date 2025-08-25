@@ -12,7 +12,6 @@ import '../../../../core/common/base/base_state.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/routes/app_routes.gr.dart';
 import '../../data/models/user_model.dart';
-import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/auth_check.dart';
 import '../../domain/usecases/auth_login.dart';
 import '../../domain/usecases/auth_logout.dart';

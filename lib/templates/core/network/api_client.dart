@@ -1,11 +1,7 @@
 class ApiClientGenerator {
   /// Generates the code for the API client.
   static String gen() {
-    return '''
-
-import 'dart:async';
-
-import 'package:dio/dio.dart';
+    return '''import 'package:dio/dio.dart';
 import '../config.dart';
 import '../errors/exception.dart';
 

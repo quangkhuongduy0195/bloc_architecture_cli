@@ -2,8 +2,6 @@ class WidgetLoadingManagerGenerator {
   static String gen() {
     return '''import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 import 'loading_indicator.dart';
 
 mixin LoadingManager {

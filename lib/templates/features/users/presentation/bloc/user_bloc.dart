@@ -10,7 +10,6 @@ import '../../../../core/common/base/base_bloc.dart';
 import '../../../../core/common/base/base_event.dart';
 import '../../../../core/common/base/base_state.dart';
 import '../../../auth/data/models/user_model.dart';
-import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/usecases/get_users.dart';
 
 part 'user_event.dart';

@@ -173,14 +173,13 @@ class ${className}LocalDataSource with PersistedStateMixin<${className}Model> {
 
   static String generateRepositoryImpl(String className, String fileName) {
     return '''import 'package:dartz/dartz.dart';
-import 'package:injectable/injectable.dart';
 
 import '../../../../core/errors/exception.dart';
 import '../../../../core/network/connection_checker.dart';
-import '../../domain/entities/${fileName}_entity.dart';
 import '../../domain/repositories/${fileName}_repository.dart';
 import '../datasources/${fileName}_local_datasource.dart';
 import '../datasources/${fileName}_remote_datasource.dart';
+import '../models/${fileName}_model.dart';
 
 class ${className}RepositoryImpl implements ${className}Repository {
   ${className}RepositoryImpl(
@@ -193,13 +192,11 @@ class ${className}RepositoryImpl implements ${className}Repository {
   final ConnectionChecker connectionChecker;
 
   @override
-  Future<Either<AppException, ${className}Entity>> get${className}() async {
+  Future<Either<AppException, ${className}Model>> get${className}() async {
     if (await connectionChecker.isConnected) {
       final remoteResult = await remoteDataSource.get${className}();
-      return remoteResult.fold((exception) => Left(exception), (
-        ${className}Model,
-      ) async {
-        return Right(${className}Model.toEntity());
+      return remoteResult.fold((exception) => Left(exception), (result) async {
+        return Right(result);
       });
     } else {
       return Left(NetworkException());
@@ -211,9 +208,7 @@ class ${className}RepositoryImpl implements ${className}Repository {
   }
 
   static String generateBloc(String className, String fileName) {
-    return '''import 'package:flutter/physics.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
+    return '''import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../core/common/base/base_bloc.dart';
 import '../../../../core/common/base/base_event.dart';
@@ -291,20 +286,20 @@ class ${className}Requested extends ${className}Event {
 ''';
   }
 
-  static String generateScreen(String className, String fileName) {
+  static String generatePage(String className, String fileName) {
     return '''import '../../../../core/config.dart';
 import '../../../../di/injection.dart';
 import '../bloc/${fileName}_bloc.dart';
 
 @RoutePage(name: '${className}Route')
-class ${className}Screen extends StatefulHookWidget {
-  const ${className}Screen({super.key});
+class ${className}Page extends StatefulHookWidget {
+  const ${className}Page({super.key});
 
   @override
-  State<StatefulWidget> createState() => _${className}ScreenState();
+  State<StatefulWidget> createState() => _${className}PageState();
 }
 
-class _${className}ScreenState extends State<${className}Screen> {
+class _${className}PageState extends State<${className}Page> {
   final bloc = getIt<${className}Bloc>();
 
   @override

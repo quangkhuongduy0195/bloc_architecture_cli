@@ -6,7 +6,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import '../../../errors/exception.dart';
-import '../../../errors/exception.dart';
 
 /// A mixin that handles API errors.
 ///
