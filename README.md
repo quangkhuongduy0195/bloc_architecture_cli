@@ -1,18 +1,7 @@
 # 🚀 Hybrid CLI
 
 ```
-╔═══════════════════════## 🎯 Giới thiệu
-
-Hybrid CLI là công cụ dòng lệnh được thiết kế để:
-- ⚡ **Tăng tốc phát triển**: Tạo dự án Flutter hoàn chỉnh trong vài giây
-- 🏗️ **Clean Architecture**: Generate các feature module với 3 layers chuẩn
-- 📦 **Ready-to-use**: Thiết lập sẵn dependency injection, state management, routing
-- 🎨 **Best Practices**: Áp dụng Flutter coding conventions và patterns ngay từ đầu
-- 🚀 **Auto Routing**: Tự động cập nhật app routes khi tạo feature mới
-- 🎯 **Focused**: Chỉ 2 lệnh chính dễ nhớ và sử dụng
-
-> **📌 Lưu ý**: Phiên bản hiện tại tập trung vào 2 lệnh cốt lõi là `init` và `feature`. 
-> Các lệnh khác như `generate` và `locale` đang được phát triển cho các phiên bản tiếp theo.══════════════════════════════════╗
+╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║         ██╗  ██╗██╗   ██╗██████╗ ██████╗ ██╗██████╗              ║
 ║         ██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗██║██╔══██╗             ║
@@ -25,6 +14,17 @@ Hybrid CLI là công cụ dòng lệnh được thiết kế để:
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
+## 🎯 Giới thiệu
+Hybrid CLI là công cụ dòng lệnh được thiết kế để:
+- ⚡ **Tăng tốc phát triển**: Tạo dự án Flutter hoàn chỉnh trong vài giây
+- 🏗️ **Clean Architecture**: Generate các feature module với 3 layers chuẩn
+- 📦 **Ready-to-use**: Thiết lập sẵn dependency injection, state management, routing
+- 🎨 **Best Practices**: Áp dụng Flutter coding conventions và patterns ngay từ đầu
+- 🚀 **Auto Routing**: Tự động cập nhật app routes khi tạo feature mới
+- 🎯 **Focused**: Chỉ 2 lệnh chính dễ nhớ và sử dụng
+
+> **📌 Lưu ý**: Phiên bản hiện tại tập trung vào 2 lệnh cốt lõi là `init` và `feature`. 
+> Các lệnh khác như `generate` và `locale` đang được phát triển cho các phiên bản tiếp theo.
 
 Một công cụ dòng lệnh mạnh mẽ để tạo code Flutter theo cấu trúc Clean Architecture với BLoC pattern một cách tự động và nhanh chóng.
 
