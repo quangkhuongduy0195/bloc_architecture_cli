@@ -30,7 +30,7 @@ enum BuildType {
 class FlavorConfig {
   final String xcPath;
   final String iosPackageName;
-  final String androidPackageName;
+  final String? androidPackageName;
   final String displayName;
   final String flavorName;
   final String dimension;
@@ -70,8 +70,8 @@ class FlavorHandler {
     // Implement execution logic
     argResults = command;
     print('Running create command with the following options:');
-    _requiredOption(['packageName', 'packageNameIos']);
-    _requiredOption(['packageName', 'packageNameAndroid']);
+    _requiredOption(['packageName', 'packageNameIos'], isRequired: false);
+    _requiredOption(['packageName', 'packageNameAndroid'], isRequired: false);
     _requiredOption(['displayName']);
     _requiredOption(['flavorName']);
 
@@ -82,10 +82,13 @@ class FlavorHandler {
     var flavorName = argResults?['flavorName'];
     var pathXcProject = argResults?['pathXcProject'];
     var teamId = argResults?['teamId'];
+    final iosPackageName = (packageNameIos ??
+        packageName ??
+        await getBundleIdentifieriOS(flavorName));
 
     print('Creating flavor with the following details:');
     print('Package Name: $packageName');
-    print('Package Name iOS: $packageNameIos');
+    print('Package Name iOS: $iosPackageName');
     print('Package Name Android: $packageNameAndroid');
     print('Display Name: $displayName');
     print('Flavor Name: $flavorName');
@@ -93,8 +96,8 @@ class FlavorHandler {
 
     final config = FlavorConfig(
         xcPath: pathXcProject ?? 'ios/Runner.xcodeproj/project.pbxproj',
-        iosPackageName: (packageNameIos ?? packageName)!,
-        androidPackageName: (packageNameAndroid ?? packageName)!,
+        iosPackageName: iosPackageName,
+        androidPackageName: (packageNameAndroid ?? packageName),
         displayName: displayName,
         flavorName: flavorName,
         iosTeamId: teamId,
@@ -104,12 +107,42 @@ class FlavorHandler {
     await createFlavor(config);
   }
 
-  void _requiredOption(List<String> option) {
+  void _requiredOption(List<String> option, {bool isRequired = true}) {
     final options = List.generate(option.length, (i) => argResults?[option[i]]);
 
-    if (options.every((test) => test == null)) {
+    if (options.every((test) => test == null) && isRequired) {
       print('Missing required option: $option');
       exit(1);
+    }
+  }
+
+  Future<String> getBundleIdentifieriOS(String flavor) async {
+    final path = 'ios/Runner.xcodeproj/project.pbxproj';
+
+    try {
+      final file = File(path);
+      if (!await file.exists()) {
+        print('project.pbxproj file not found at $path');
+        return 'com.example.$flavor';
+      }
+
+      final content = await file.readAsString();
+
+      // Tìm PRODUCT_BUNDLE_IDENTIFIER trong file
+      final regex = RegExp(r'PRODUCT_BUNDLE_IDENTIFIER\s*=\s*([^;]+);');
+      final match = regex.firstMatch(content);
+
+      if (match != null) {
+        String bundleId = match.group(1)!.trim();
+        // Remove quotes if present
+        bundleId = bundleId.replaceAll('"', '');
+        return '$bundleId.$flavor';
+      }
+
+      return 'com.example.$flavor';
+    } catch (e) {
+      print('Error reading bundle identifier: $e');
+      return 'com.example.$flavor';
     }
   }
 

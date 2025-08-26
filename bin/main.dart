@@ -12,7 +12,7 @@ void main(List<String> arguments) async {
     ..addFlag('help', abbr: 'h', help: 'Show usage information')
     ..addFlag('version', abbr: 'v', help: 'Show version information');
 
-  // Add generate command with --feature option
+  // Add flavor command with options
   final flavorCommand = parser.addCommand('flavor');
   flavorCommand
     ..addOption('packageName',
@@ -80,179 +80,154 @@ void _showHelp(ArgParser parser) {
   print('');
   _logo();
   print('');
-  print('Usage: hybrid <command> [arguments]');
-  print('');
-  print('Available commands:');
-  print('  init      Initialize a new Flutter project with clean architecture');
-  print('  generate  Generate specific components (model, repository, etc.)');
-  print('  feature   Create a new feature module');
-  print('');
-  // print('generate available options:');
-  // print('Usage: hybrid generate <type> <name> [feature_name]');
-  // print('   or: hybrid generate <type> <name> --feature=<feature_name>');
-  // print('');
-  // print('Available types:');
-  // print('  model         Generate a data model');
-  // print('  repository    Generate a repository');
-  // print('  usecase       Generate a use case');
-  // print('  controller    Generate a controller');
-  // print('  screen        Generate a screen');
-  // print('  widget        Generate a widget');
-  // print('  service       Generate a service');
-  // print('');
-  print('feature available options:');
-  print('Usage: hybrid feature <options>');
-  print('  --name        Specify the feature name');
-  print('  --description Specify the feature description');
-  print('  --format      Specify the format (json or keys)');
-  print('  --skip-unnecessary-keys  Skip unnecessary keys of nested objects');
-  print('');
-  print('Global options:');
-  print(parser.usage);
+  _helpCommand(parser);
 }
 
 void _logo() {
-  print('╔══════════════════════════════════════════════════════════════════╗');
-  print('║                                                                  ║');
-  print('║    Hybrid CLI - Generate Flutter code with clean architecture    ║');
-  print('║                                                                  ║');
-  print('║         ██╗  ██╗██╗   ██╗██████╗ ██████╗ ██╗██████╗              ║');
-  print('║         ██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗██║██╔══██╗             ║');
-  print('║         ███████║ ╚████╔╝ ██████╔╝██████╔╝██║██║  ██║             ║');
-  print('║         ██╔══██║  ╚██╔╝  ██╔══██╗██╔══██╗██║██║  ██║             ║');
-  print('║         ██║  ██║   ██║   ██████╔╝██║  ██║██║██████╔╝             ║');
-  print('║         ╚═╝  ╚═╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝╚═════╝              ║');
-  print('║                                                                  ║');
-  print('║                🚀 Flutter BLoC Generator 🚀                      ║');
-  print('║                                                                  ║');
-  print('╚══════════════════════════════════════════════════════════════════╝');
+  // ANSI color codes
+  const String cyan = '\x1B[36m'; // Cyan
+  const String blue = '\x1B[34m'; // Blue
+  const String magenta = '\x1B[35m'; // Magenta
+  const String yellow = '\x1B[33m'; // Yellow
+  const String red = '\x1B[31m'; // Red
+  const String green = '\x1B[32m'; // Green
+  const String reset = '\x1B[0m'; // Reset color
+  const String bold = '\x1B[1m'; // Bold text
+
+  print(
+      '${cyan}╔══════════════════════════════════════════════════════════════════╗${reset}');
+  print(
+      '${cyan}║                                                                  ║${reset}');
+  print(
+      '${cyan}║    ${bold}${blue}Hybrid CLI - Generate Flutter code with clean architecture${reset}${cyan}    ║${reset}');
+  print(
+      '${cyan}║                                                                  ║${reset}');
+  // Gradient effect: Red -> Magenta -> Blue -> Cyan -> Green -> Yellow
+  print(
+      '${cyan}║         ${bold}${red}██╗  ██╗${magenta}██╗   ██╗${blue}██████╗ ${cyan}██████╗ ${green}██╗${yellow}██████╗${reset}${cyan}              ║${reset}');
+  print(
+      '${cyan}║         ${bold}${red}██║  ██║${magenta}╚██╗ ██╔╝${blue}██╔══██╗${cyan}██╔══██╗${green}██║${yellow}██╔══██╗${reset}${cyan}             ║${reset}');
+  print(
+      '${cyan}║         ${bold}${red}███████║${magenta} ╚████╔╝ ${blue}██████╔╝${cyan}██████╔╝${green}██║${yellow}██║  ██║${reset}${cyan}             ║${reset}');
+  print(
+      '${cyan}║         ${bold}${red}██╔══██║${magenta}  ╚██╔╝  ${blue}██╔══██╗${cyan}██╔══██╗${green}██║${yellow}██║  ██║${reset}${cyan}             ║${reset}');
+  print(
+      '${cyan}║         ${bold}${red}██║  ██║${magenta}   ██║   ${blue}██████╔╝${cyan}██║  ██║${green}██║${yellow}██████╔╝${reset}${cyan}             ║${reset}');
+  print(
+      '${cyan}║         ${bold}${red}╚═╝  ╚═╝${magenta}   ╚═╝   ${blue}╚═════╝ ${cyan}╚═╝  ╚═╝${green}╚═╝${yellow}╚═════╝${reset}${cyan}              ║${reset}');
+  print(
+      '${cyan}║                                                                  ║${reset}');
+  print(
+      '${cyan}║                ${bold}${yellow}🚀 Flutter BLoC Generator 🚀${reset}${cyan}                      ║${reset}');
+  print(
+      '${cyan}║                                                                  ║${reset}');
+  print(
+      '${cyan}╚══════════════════════════════════════════════════════════════════╝${reset}');
   print('');
 }
 
-class CreateCommand extends Command {
-  @override
-  final name = 'create';
-  @override
-  final description = 'Create a new application flavor';
+void _helpCommand(ArgParser parser) {
+  // ANSI color codes
+  const cyan = '\x1B[36m'; // Cyan
+  const yellow = '\x1B[33m'; // Yellow
+  const green = '\x1B[32m'; // Green
+  const blue = '\x1B[34m'; // Blue
+  const magenta = '\x1B[35m'; // Magenta
+  const bold = '\x1B[1m'; // Bold
+  const reset = '\x1B[0m'; // Reset
 
-  void _requiredOption(List<String> option) {
-    final options = List.generate(option.length, (i) => argResults?[option[i]]);
+  print(
+      '${bold}${cyan}Usage:${reset} ${bold}hybrid <command> [arguments]${reset}');
+  print('');
 
-    if (options.every((test) => test == null)) {
-      print('Missing required option: $option\n$usage');
-      exit(1);
-    }
-  }
+  print('${bold}${yellow}📚 Available Commands:${reset}');
+  print(
+      '  ${bold}${green}init${reset}      🚀 Initialize a new Flutter project with clean architecture');
+  print(
+      '  ${bold}${green}feature${reset}   📦 Create a new feature module with BLoC pattern');
+  print(
+      '  ${bold}${green}flavor${reset}    🎯 Create and manage app flavors (staging, production, etc.)');
+  print('');
 
-  CreateCommand() {
-    argParser
-      ..addOption('packageName',
-          abbr: 'p', help: 'Package name for iOS and Android if common.')
-      ..addOption('packageNameIos',
-          abbr: 'i', help: 'Package name specific to iOS.')
-      ..addOption('packageNameAndroid',
-          abbr: 'a', help: 'Package name specific to Android.')
-      ..addOption('displayName',
-          abbr: 'd', help: 'Display name of the application.')
-      ..addOption('flavorName',
-          abbr: 'f', help: 'Flavor name of the application.')
-      ..addOption('pathXcProject',
-          abbr: 'x', help: 'Path to the Xcode project (optional).')
-      ..addOption('iconsLauncher',
-          help: 'Supports icons (optional).', defaultsTo: 'false')
-      ..addOption('teamId',
-          abbr: 't',
-          help: 'Team ID of the IOS application (DEFAULT: none).',
-          defaultsTo: '""');
-  }
+  print('${bold}${yellow}📖 Command Details:${reset}');
+  print('');
 
-  @override
-  Future<void> run() async {
-    print('Running create command with the following options:');
-    _requiredOption(['packageName', 'packageNameIos']);
-    _requiredOption(['packageName', 'packageNameAndroid']);
-    _requiredOption(['displayName']);
-    _requiredOption(['flavorName']);
+  // Init command
+  print('${bold}${blue}■ init${reset} - Project Initialization');
+  print('  Creates a new Flutter project with clean architecture structure');
+  print('  ${bold}Usage:${reset} hybrid init <project_name>');
+  print(
+      '  ${bold}Example:${reset} ${magenta}hybrid init my_awesome_app${reset}');
+  print('');
 
-    var packageName = argResults?['packageName'];
-    var packageNameIos = argResults?['packageNameIos'];
-    var packageNameAndroid = argResults?['packageNameAndroid'];
-    var displayName = argResults?['displayName'];
-    var flavorName = argResults?['flavorName'];
-    var pathXcProject = argResults?['pathXcProject'];
-    var teamId = argResults?['teamId'];
+  // Feature command
+  print('${bold}${blue}■ feature${reset} - Feature Module Generator');
+  print('  Creates a complete feature module with BLoC pattern');
+  print('  ${bold}Usage:${reset} hybrid feature [options]');
+  print('  ${bold}Options:${reset}');
+  print(
+      '    ${green}--name${reset}                      Feature name (required)');
+  print('    ${green}--description${reset}               Feature description');
+  print(
+      '    ${green}--format${reset}                    Output format (json or keys)');
+  print(
+      '    ${green}--skip-unnecessary-keys${reset}     Skip unnecessary nested keys');
+  print(
+      '  ${bold}Example:${reset} ${magenta}hybrid feature --name auth --description "User authentication"${reset}');
+  print('');
 
-    print('Creating flavor with the following details:');
-    print('Package Name: $packageName');
-    print('Package Name iOS: $packageNameIos');
-    print('Package Name Android: $packageNameAndroid');
-    print('Display Name: $displayName');
-    print('Flavor Name: $flavorName');
-    print('Path to Xcode Project: $pathXcProject');
+  // Flavor command
+  print('${bold}${blue}■ flavor${reset} - App Flavor Management');
+  print(
+      '  Creates and manages different app environments (staging, production, etc.)');
+  print('  ${bold}Usage:${reset} hybrid flavor [options]');
+  print('  ${bold}Options:${reset}');
+  print(
+      '    ${green}-p, --packageName${reset}           Package name for both platforms');
+  print(
+      '    ${green}-i, --packageNameIos${reset}        iOS-specific package name');
+  print(
+      '    ${green}-a, --packageNameAndroid${reset}    Android-specific package name');
+  print('    ${green}-d, --displayName${reset}           App display name');
+  print(
+      '    ${green}-f, --flavorName${reset}            Flavor name (staging, dev, prod, etc.)');
+  print(
+      '    ${green}-x, --pathXcProject${reset}         Path to Xcode project (optional)');
+  print(
+      '    ${green}-t, --teamId${reset}                iOS Team ID (optional)');
+  print(
+      '    ${green}--iconsLauncher${reset}             Enable custom icons (default: false)');
+  print('');
+  print('  ${bold}Examples:${reset}');
+  print('    ${magenta}# Simple staging flavor${reset}');
+  print(
+      '    ${magenta}hybrid flavor -p com.example.app.staging -d "App Staging" -f staging${reset}');
+  print('');
+  print('    ${magenta}# Different package names for each platform${reset}');
+  print(
+      '    ${magenta}hybrid flavor -i com.example.ios.dev -a com.example.android.dev -d "Dev Build" -f dev${reset}');
+  print('');
 
-    final config = FlavorConfig(
-        xcPath: pathXcProject ?? 'ios/Runner.xcodeproj/project.pbxproj',
-        iosPackageName: (packageNameIos ?? packageName)!,
-        androidPackageName: (packageNameAndroid ?? packageName)!,
-        displayName: displayName,
-        flavorName: flavorName,
-        iosTeamId: teamId,
-        isEnabledIconsLauncher:
-            (argResults?['iconsLauncher'] ?? 'false') == 'true');
+  print('${bold}${yellow}⚙️  Global Options:${reset}');
+  print('  ${green}-h, --help${reset}        Show this help information');
+  print('  ${green}-v, --version${reset}     Show version information');
+  print('');
 
-    await createFlavor(config);
-  }
-}
+  print('${bold}${yellow}💡 Quick Start Examples:${reset}');
+  print(
+      '  ${magenta}hybrid init my_flutter_app${reset}                           # Create new project');
+  print(
+      '  ${magenta}hybrid feature --name user --description "User management"${reset}   # Add feature');
+  print(
+      '  ${magenta}hybrid flavor -p com.myapp.staging -d "Staging" -f staging${reset}   # Add flavor');
+  print(
+      '  ${magenta}hybrid --help${reset}                                        # Show help');
+  print('');
 
-class UpdateCommand extends Command {
-  @override
-  final name = 'update';
-  @override
-  final description = 'Update an existing application flavor';
-
-  UpdateCommand() {
-    argParser
-      ..addOption('flavorName',
-          help: 'Flavor name of the application.', mandatory: true)
-      ..addOption('packageNameIos', help: 'New package name specific to iOS.')
-      ..addOption('packageNameAndroid',
-          help: 'New package name specific to Android.')
-      ..addOption('displayNameIos', help: 'New display name specific to iOS.')
-      ..addOption('displayNameAndroid',
-          help: 'New display name specific to Android.')
-      ..addOption('newFlavorName', help: 'New flavor name of the application.');
-  }
-
-  @override
-  void run() {
-    var flavorName = argResults?['flavorName'];
-    var packageNameIos = argResults?['packageNameIos'];
-    var packageNameAndroid = argResults?['packageNameAndroid'];
-    var displayNameIos = argResults?['displayNameIos'];
-    var displayNameAndroid = argResults?['displayNameAndroid'];
-    var newFlavorName = argResults?['newFlavorName'];
-
-    print('Updating flavor "$flavorName" with the following details:');
-    if (packageNameIos != null) print('New Package Name iOS: $packageNameIos');
-    if (packageNameAndroid != null)
-      print('New Package Name Android: $packageNameAndroid');
-    if (displayNameIos != null) print('New Display Name iOS: $displayNameIos');
-    if (displayNameAndroid != null)
-      print('New Display Name Android: $displayNameAndroid');
-    if (newFlavorName != null) print('New Flavor Name: $newFlavorName');
-  }
-}
-
-Future<void> runnerArgs(List<String> arguments) async {
-  var runner =
-      CommandRunner('flavor', 'A tool for managing application flavors')
-        ..addCommand(CreateCommand())
-        ..addCommand(UpdateCommand());
-
-  await runner.run(arguments).catchError((error) {
-    print(error);
-    if (error is UsageException) {
-      print('\n${error.usage}');
-    }
-  });
+  print('${bold}${cyan}🌐 More Information:${reset}');
+  print(
+      '  Documentation: ${blue}https://github.com/your-repo/hybrid-cli${reset}');
+  print(
+      '  Issues & Support: ${blue}https://github.com/your-repo/hybrid-cli/issues${reset}');
+  print('');
 }

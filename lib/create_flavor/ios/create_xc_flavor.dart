@@ -10,6 +10,7 @@ import '../create_flavor.dart';
 import 'update_pod.dart';
 
 createXcFlavor(FlavorConfig config) async {
+  print(config);
   final String flavor = config.flavorName;
   final String package = config.iosPackageName;
   final String displayName = config.displayName;
@@ -37,8 +38,8 @@ createXcFlavor(FlavorConfig config) async {
   final uuidDebugBuildConfiguration2 = project.generateUuid();
   final uuidProfileBuildConfiguration2 = project.generateUuid();
 
-  await createXcConfig(BuildType.release, flavor, package, displayName);
-  await createXcConfig(BuildType.debug, flavor, package, displayName);
+  await createXcConfig(BuildType.release, flavor, package ?? '', displayName);
+  await createXcConfig(BuildType.debug, flavor, package ?? '', displayName);
 
   // await createXcodeScheme(
   //   blueprintIdentifierDebug: blueprintIdentifierDebug,

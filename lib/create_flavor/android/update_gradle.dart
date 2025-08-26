@@ -8,25 +8,34 @@ String addFlavorDimension(String content, String dimension) {
 
     if (match != null) {
       final insertPosition = match.end;
-      final updatedContent = content.replaceRange(insertPosition, insertPosition, '''
+      final updatedContent =
+          content.replaceRange(insertPosition, insertPosition, '''
 
-    flavorDimensions "$dimension"''');
+    flavorDimensions += "$dimension"''');
       return updatedContent;
     } else {
-      throw Exception('The android section not found in the build.gradle file.');
+      throw Exception(
+          'The android section not found in the build.gradle file.');
     }
   }
 }
 
-String addOrUpdateProductFlavors(
-    String content, String flavorName, String dimension, String displayName, String androidPackage) {
+String addOrUpdateProductFlavors(String content, String flavorName,
+    String dimension, String displayName, String? androidPackage) {
   final productFlavorsRegex = RegExp(r'productFlavors\s*\{');
+  final applicationId = androidPackage == null || androidPackage.isEmpty
+      ? 'applicationIdSuffix = ".$flavorName"'
+      : 'applicationId = "$androidPackage"';
   final flavorBlock = '''
 
-        $flavorName {
-            dimension "$dimension"
-            resValue "string", "app_name", "$displayName"
-            applicationId "$androidPackage"
+        create("$flavorName") {
+            dimension = "$dimension"
+            resValue(
+                type = "string",
+                name = "app_name",
+                value = "$displayName"
+            )
+            $applicationId
         }
 ''';
 
@@ -34,7 +43,8 @@ String addOrUpdateProductFlavors(
 
   if (match != null) {
     final insertPosition = match.end;
-    final updatedContent = content.replaceRange(insertPosition, insertPosition, flavorBlock);
+    final updatedContent =
+        content.replaceRange(insertPosition, insertPosition, flavorBlock);
     return updatedContent;
   } else {
     final androidSectionRegex = RegExp(r'android\s*\{');
@@ -42,13 +52,15 @@ String addOrUpdateProductFlavors(
 
     if (androidMatch != null) {
       final insertPosition = androidMatch.end;
-      final updatedContent = content.replaceRange(insertPosition, insertPosition, '''
+      final updatedContent =
+          content.replaceRange(insertPosition, insertPosition, '''
 
     productFlavors {$flavorBlock
     }''');
       return updatedContent;
     } else {
-      throw Exception('The android section not found in the build.gradle file.');
+      throw Exception(
+          'The android section not found in the build.gradle file.');
     }
   }
 }
