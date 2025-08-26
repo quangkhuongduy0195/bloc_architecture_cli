@@ -38,8 +38,8 @@ createXcFlavor(FlavorConfig config) async {
   final uuidDebugBuildConfiguration2 = project.generateUuid();
   final uuidProfileBuildConfiguration2 = project.generateUuid();
 
-  await createXcConfig(BuildType.release, flavor, package ?? '', displayName);
-  await createXcConfig(BuildType.debug, flavor, package ?? '', displayName);
+  await createXcConfig(BuildType.release, flavor, package, displayName);
+  await createXcConfig(BuildType.debug, flavor, package, displayName);
 
   // await createXcodeScheme(
   //   blueprintIdentifierDebug: blueprintIdentifierDebug,

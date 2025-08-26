@@ -987,8 +987,7 @@ class ProjectGenerator {
         ? Directory(path.dirname(path.dirname(script.toFilePath())))
         : Directory.current;
 
-    final exampleAssetsDir =
-        Directory(path.join(packageRoot.path, 'lib', 'templates', 'assets'));
+    final exampleAssetsDir = Directory(path.join(packageRoot.path, 'assets'));
 
     final sampleAssetsExist = await exampleAssetsDir.exists();
     print('Sample assets exist: $sampleAssetsExist - $exampleAssetsDir');

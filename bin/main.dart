@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:args/command_runner.dart';
 import 'package:hybrid_cli/create_flavor/create_flavor.dart';
 import '../lib/commands/init_command.dart';
 import '../lib/commands/feature_command.dart';
@@ -57,9 +56,6 @@ void main(List<String> arguments) async {
       case 'init':
         await InitCommand().execute(command);
         break;
-      // case 'generate':
-      //   await GenerateCommand().execute(command);
-      //   break;
       case 'feature':
         await FeatureCommand().execute(command);
         break;
