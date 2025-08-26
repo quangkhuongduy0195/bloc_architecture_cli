@@ -1,6 +1,6 @@
 name: hybrid_cli
 description: A CLI tool for generating Flutter code with clean architecture structure
-version: 1.0.0
+version: 1.0.1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -9,7 +9,7 @@ dependencies:
   args: ^2.4.2
   path: ^1.9.0
   io: ^1.0.4
-  xml: ^6.6.1
+  xml: 6.5.0
   xcode_parser: ^1.2.1
 
 dev_dependencies:

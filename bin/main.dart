@@ -43,7 +43,7 @@ void main(List<String> arguments) async {
     }
 
     if (results['version'] as bool) {
-      print('Hybrid CLI v1.0.0');
+      print('Hybrid CLI v1.0.1');
       return;
     }
 

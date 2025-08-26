@@ -21,9 +21,10 @@ Hybrid CLI là công cụ dòng lệnh được thiết kế để:
 - 📦 **Ready-to-use**: Thiết lập sẵn dependency injection, state management, routing
 - 🎨 **Best Practices**: Áp dụng Flutter coding conventions và patterns ngay từ đầu
 - 🚀 **Auto Routing**: Tự động cập nhật app routes khi tạo feature mới
-- 🎯 **Focused**: Chỉ 2 lệnh chính dễ nhớ và sử dụng
+- � **Flavor Management**: Tự động cấu hình flavors cho môi trường dev/staging/prod
+- �🎯 **Focused**: Chỉ 3 lệnh chính dễ nhớ và sử dụng
 
-> **📌 Lưu ý**: Phiên bản hiện tại tập trung vào 2 lệnh cốt lõi là `init` và `feature`. 
+> **📌 Lưu ý**: Phiên bản hiện tại hỗ trợ 3 lệnh cốt lõi: `init`, `feature`, và `flavor`. 
 > Các lệnh khác như `generate` và `locale` đang được phát triển cho các phiên bản tiếp theo.
 
 Một công cụ dòng lệnh mạnh mẽ để tạo code Flutter theo cấu trúc Clean Architecture với BLoC pattern một cách tự động và nhanh chóng.
@@ -41,7 +42,8 @@ Một công cụ dòng lệnh mạnh mẽ để tạo code Flutter theo cấu tr
 - 🎨 **UI Components**: Generate widgets và pages với templates chuyên nghiệp
 - 🔧 **Code Generation Ready**: Hỗ trợ JSON serialization và build_runner
 - 📱 **Responsive Design**: Templates responsive cho multi-platform
-- ⚡ **Simple Commands**: Chỉ 2 lệnh chính: `init` và `feature`
+- 🍃 **Flavor Management**: Tự động tạo và cấu hình flavors cho iOS/Android
+- ⚡ **Simple Commands**: 3 lệnh chính: `init`, `feature`, và `flavor`
 
 ## 📋 Mục lục
 
@@ -59,10 +61,11 @@ Một công cụ dòng lệnh mạnh mẽ để tạo code Flutter theo cấu tr
 Hybrid CLI là công cụ dòng lệnh được thiết kế để:
 - ⚡ **Tăng tốc phát triển**: Tạo dự án Flutter hoàn chỉnh trong vài giây
 - 🏗️ **Clean Architecture**: Generate các feature module với 3 layers chuẩn
--  **Ready-to-use**: Thiết lập sẵn dependency injection, state management, routing
+- 📦 **Ready-to-use**: Thiết lập sẵn dependency injection, state management, routing
 - 🎨 **Best Practices**: Áp dụng Flutter coding conventions và patterns ngay từ đầu
 - 🚀 **Auto Routing**: Tự động cập nhật app routes khi tạo feature mới
-- 🎯 **Focused**: Chỉ 2 lệnh chính dễ nhớ và sử dụng
+- � **Flavor Management**: Tự động cấu hình flavors cho môi trường dev/staging/prod
+- �🎯 **Focused**: Chỉ 3 lệnh chính dễ nhớ và sử dụng
 
 ## 📥 Cài đặt
 
@@ -85,7 +88,7 @@ chmod +x install.sh
 dart pub get
 
 # Activate global
-dart pub global activate --source path .
+dart pub global activate --source git https://github.com/quangkhuongduy0195/bloc_architecture_cli.git
 ```
 
 ### Kiểm tra cài đặt
@@ -119,7 +122,20 @@ hybrid feature user_profile
 hybrid feature product_catalog
 ```
 
-### 3. Sử dụng các components có sẵn
+### 3. Cấu hình flavors cho multi-environment (🆕)
+
+```bash
+# Tạo flavor staging
+hybrid flavor --packageName com.myapp.staging --displayName "My App Staging" --flavorName staging
+
+# Tạo flavor development với short syntax
+hybrid flavor -p com.myapp.dev -d "My App Dev" -f dev
+
+# Tạo flavor production
+hybrid flavor --packageName com.myapp.prod --displayName "My App" --flavorName prod
+```
+
+### 4. Sử dụng các components có sẵn
 
 ```bash
 # Dự án đã được tạo với cấu trúc hoàn chỉnh
@@ -128,16 +144,17 @@ hybrid feature product_catalog
 # - Dependency injection đã cấu hình
 # - Routes đã được tự động tạo
 # - Clean architecture structure đã sẵn sàng
+# - Flavors đã được cấu hình
 
 # Chỉ cần chạy:
 flutter pub get
 flutter packages pub run build_runner build
-flutter run
+flutter run --flavor dev  # hoặc staging, prod
 ```
 
 ## 📚 Các lệnh chi tiết
 
-Hybrid CLI chỉ có **2 lệnh chính** đơn giản và mạnh mẽ:
+Hybrid CLI có **3 lệnh chính** đơn giản và mạnh mẽ:
 
 ### 🔧 `hybrid init <project_name>`
 
@@ -182,6 +199,49 @@ hybrid feature orders
 - ✅ **Presentation Layer**: BLoC/Cubit, Pages, Widgets
 - ✅ **Auto Routing**: Tự động thêm CustomRoute vào `app_routes.dart`
 - ✅ **Import Management**: Tự động thêm import cho page mới
+
+### 🍃 `hybrid flavor` - Flavor Management
+
+Tạo và cấu hình flavors cho multi-environment development.
+
+**Syntax:**
+```bash
+hybrid flavor [options]
+```
+
+**Ví dụ:**
+```bash
+# Cách 1: Sử dụng full option names
+hybrid flavor --packageName com.myapp.staging --displayName "My App Staging" --flavorName staging
+
+# Cách 2: Sử dụng short syntax (khuyến nghị)
+hybrid flavor -p com.myapp.dev -d "My App Dev" -f dev
+
+# Cách 3: Chỉ định riêng iOS và Android package
+hybrid flavor --packageNameIos com.myapp.ios.prod --packageNameAndroid com.myapp.android.prod --displayName "My App" --flavorName prod
+```
+
+**Options:**
+- `--packageName, -p`: Package name chung cho iOS và Android
+- `--packageNameIos, -i`: Package name riêng cho iOS (bundle identifier)
+- `--packageNameAndroid, -a`: Package name riêng cho Android 
+- `--displayName, -d`: Tên hiển thị của app (bắt buộc)
+- `--flavorName, -f`: Tên flavor (bắt buộc)
+- `--xcodeProject, -x`: Tên Xcode project (mặc định: Runner)
+- `--target, -t`: Target name cho Xcode (mặc định: Runner)
+
+**Tạo ra:**
+- ✅ **iOS Configuration**: 
+  - Xcode schemes cho flavor mới
+  - Bundle identifier configuration 
+  - Info.plist updates
+  - Podfile flavor configuration
+- ✅ **Android Configuration**:
+  - Gradle build variants
+  - AndroidManifest.xml updates
+  - App name configuration
+- ✅ **Auto Detection**: Tự động phát hiện iOS bundle và Android package hiện tại
+- ✅ **Ready to Run**: Flavor sẵn sàng sử dụng với `flutter run --flavor <name>`
 
 ### 🆘 `hybrid --help` hoặc `hybrid -h`
 
@@ -306,14 +366,17 @@ hybrid feature shopping_cart
 hybrid feature user_profile
 hybrid feature order_management
 
-# 3. Generate core models (nếu cần)
-# Các models này sẽ được tạo trong core/models
-# (Thực tế feature đã tạo sẵn entities trong domain layer)
+# 3. Cấu hình flavors cho multi-environment
+hybrid flavor -p com.ecommerce.dev -d "E-commerce Dev" -f dev
+hybrid flavor -p com.ecommerce.staging -d "E-commerce Staging" -f staging  
+hybrid flavor -p com.ecommerce.prod -d "E-commerce" -f prod
 
-# 4. Chạy application
+# 4. Chạy application với flavor
 flutter pub get
 flutter pub run build_runner build -d
-flutter run
+flutter run --flavor dev    # Development
+flutter run --flavor staging # Staging
+flutter run --flavor prod   # Production
 ```
 
 ### 📱 Tạo ứng dụng Social Media
@@ -331,16 +394,17 @@ hybrid feature messaging
 hybrid feature notifications
 hybrid feature friends
 
-# 3. Generate core entities (nếu cần shared models)
-# Các entities đã được tạo trong mỗi feature's domain layer
+# 3. Setup flavors cho development workflow
+hybrid flavor -p com.social.dev -d "Social Dev" -f dev
+hybrid flavor -p com.social.beta -d "Social Beta" -f beta
+hybrid flavor -p com.social.prod -d "Social Media" -f prod
 
-# 4. Customize và extend features theo nhu cầu
-# Mỗi feature đã có đầy đủ: entities, repositories, use cases, BLoC, pages, widgets
-
-# 5. Chạy ứng dụng
+# 4. Chạy ứng dụng với environment
 flutter pub get
 flutter pub run build_runner build -d
-flutter run
+flutter run --flavor dev     # Development với debug features
+flutter run --flavor beta    # Beta testing
+flutter run --flavor prod    # Production release
 ```
 
 ### 🏥 Tạo ứng dụng Healthcare
@@ -357,13 +421,17 @@ hybrid feature medical_records
 hybrid feature telemedicine
 hybrid feature prescriptions
 
-# 3. Customize medical entities (đã có sẵn trong features)
-# Mỗi feature đã được tạo với đầy đủ entities, repositories, use cases
+# 3. Cấu hình flavors cho compliance và testing
+hybrid flavor -p com.healthcare.dev -d "Healthcare Dev" -f dev
+hybrid flavor -p com.healthcare.staging -d "Healthcare Staging" -f staging
+hybrid flavor -p com.healthcare.prod -d "Healthcare Pro" -f prod
 
-# 4. Setup và test
+# 4. Setup và test với different environments
 flutter pub get
 flutter pub run build_runner build -d
-flutter run
+flutter run --flavor dev      # Development với test data
+flutter run --flavor staging  # Staging với simulated data
+flutter run --flavor prod     # Production với real backend
 ```
 
 ## 🎨 Tính năng tự động
@@ -387,6 +455,29 @@ Khi tạo feature mới, CLI tự động:
    ```
 
 3. **Cập nhật app_routes.dart**: Không cần chỉnh sửa thủ công!
+
+### 🍃 Auto Flavor Configuration
+
+Khi tạo flavor mới, CLI tự động:
+
+1. **iOS Configuration**:
+   - Tạo Xcode scheme mới với bundle identifier
+   - Cập nhật Info.plist với display name
+   - Thiết lập Podfile configuration
+   - Phát hiện tự động bundle identifier hiện tại
+
+2. **Android Configuration**:
+   - Tạo product flavor trong build.gradle
+   - Cập nhật AndroidManifest.xml với app name
+   - Thiết lập signing configurations
+   - Phát hiện tự động package name hiện tại
+
+3. **Ready to Use**: Flavor sẵn sàng với lệnh:
+   ```bash
+   flutter run --flavor <flavor_name>
+   flutter build apk --flavor <flavor_name>
+   flutter build ios --flavor <flavor_name>
+   ```
 
 ### 📦 Generated Code Structure
 
@@ -460,6 +551,7 @@ class ${className}Component {
 - ✅ **Clean Architecture**: Tách biệt rõ ràng 3 layers (Data, Domain, Presentation)
 - ✅ **BLoC Pattern**: State management với BLoC/Cubit pattern  
 - ✅ **Auto Route Generation**: Tự động cập nhật routes khi tạo feature mới
+- ✅ **Flavor Management**: Tự động cấu hình flavors cho iOS và Android
 - ✅ **Dependency Injection**: GetIt service locator setup sẵn
 - ✅ **Error Handling**: Failure và Exception pattern chuẩn
 - ✅ **Repository Pattern**: Data sources với remote/local implementation
@@ -469,6 +561,7 @@ class ${className}Component {
 - ✅ **Responsive Design**: Templates responsive cho mobile/tablet/desktop
 - ✅ **Code Documentation**: Generated comments và README files
 - ✅ **Best Practices**: Flutter coding conventions và performance optimization
+- ✅ **Multi-Environment**: Dev/Staging/Production configuration tự động
 
 ## 🧪 Testing & Quality
 
@@ -564,6 +657,34 @@ flutter pub get
 flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
 
+**Q: Flavor không hoạt động**
+```bash
+# Kiểm tra flavor đã được tạo
+ls ios/Runner.xcodeproj/xcshareddata/xcschemes/
+cat android/app/build.gradle | grep productFlavors
+
+# Chạy với flavor cụ thể
+flutter run --flavor dev -d <device_id>
+
+# Kiểm tra iOS bundle identifier
+cat ios/Runner/Info.plist | grep -A1 CFBundleIdentifier
+
+# Kiểm tra Android package name  
+cat android/app/src/main/AndroidManifest.xml | grep package
+```
+
+**Q: Xcode scheme không tìm thấy**
+```bash
+# Rebuild Xcode schemes
+cd ios
+rm -rf Runner.xcodeproj/xcshareddata/xcschemes/*.xcscheme
+cd ..
+hybrid flavor -p com.myapp.dev -d "App Dev" -f dev
+
+# Hoặc mở Xcode và check schemes manually
+open ios/Runner.xcworkspace
+```
+
 ### Getting Help
 
 Nếu bạn gặp vấn đề hoặc có câu hỏi:
@@ -627,12 +748,14 @@ dart run bin/main.dart --help
 
 ### 📈 Version History
 
-- **v1.0.0**: *(Current)* Core functionality với 2 lệnh chính
+- **v1.0.0**: *(Current)* Core functionality với 3 lệnh chính
   - `hybrid init`: Tạo project với Clean Architecture
   - `hybrid feature`: Tạo feature với auto route generation
-  - ASCII banner đẹp mắt
+  - `hybrid flavor`: Multi-environment flavor configuration
+  - ASCII banner đẹp mắt với gradient colors
   - BLoC pattern integration
   - Dependency injection setup
+  - iOS/Android flavor automation
 
 ## 📝 License
 
