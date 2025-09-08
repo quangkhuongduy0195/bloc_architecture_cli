@@ -119,7 +119,9 @@ class FeatureGenerator {
     final updatedContent = await appRoutesFile.readAsString();
 
     // Create new route entry
-    final newRoute = '''    CustomRoute(
+    final newRoute = '''
+    
+    CustomRoute(
       page: ${className}Route.page,
       path: '/${featureName.toLowerCase()}',
       transitionsBuilder: customAnimation,

@@ -173,7 +173,7 @@ class ${className}LocalDataSource with PersistedStateMixin<${className}Model> {
 
   static String generateRepositoryImpl(String className, String fileName) {
     return '''import 'package:dartz/dartz.dart';
-
+import 'package:injectable/injectable.dart';
 import '../../../../core/errors/exception.dart';
 import '../../../../core/network/connection_checker.dart';
 import '../../domain/repositories/${fileName}_repository.dart';
@@ -181,6 +181,7 @@ import '../datasources/${fileName}_local_datasource.dart';
 import '../datasources/${fileName}_remote_datasource.dart';
 import '../models/${fileName}_model.dart';
 
+@Injectable(as: ${className}Repository)
 class ${className}RepositoryImpl implements ${className}Repository {
   ${className}RepositoryImpl(
     this.remoteDataSource,
